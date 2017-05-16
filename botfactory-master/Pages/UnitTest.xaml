@@ -1,0 +1,70 @@
+﻿<Page x:Class="BotFactory.Pages.UnitTest"
+      xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+      xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+      xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006" 
+      xmlns:d="http://schemas.microsoft.com/expression/blend/2008" 
+      xmlns:local="clr-namespace:BotFactory.Pages"
+      mc:Ignorable="d" 
+      d:DesignHeight="250" d:DesignWidth="500"
+      Title="UnitTest">
+
+    <Grid>
+        <Grid.RowDefinitions>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="30"/>
+            <RowDefinition Height="100"/>
+        </Grid.RowDefinitions>
+        <Grid.ColumnDefinitions>
+            <ColumnDefinition Width="150"/>
+            <ColumnDefinition Width="200"/>
+            <ColumnDefinition Width="150"/>
+        </Grid.ColumnDefinitions>
+
+        <Border Grid.RowSpan="5" Grid.ColumnSpan="3" BorderBrush="Black" BorderThickness="1"/>
+        
+        <Border Grid.Row="0" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"/>
+        <Border Grid.Row="1" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"/>
+        <Border Grid.Row="2" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"/>
+        <Border Grid.Row="3" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"/>
+        <Border Grid.Row="4" Grid.ColumnSpan="2" BorderBrush="Black" BorderThickness="1"/>
+
+        <Label Grid.Row="0" Grid.Column="0" Content="Bot name :"/>
+        <Label Grid.Row="0" Grid.Column="1" Grid.ColumnSpan="2" Content="{Binding IBot.Name}"/>
+        <Label Grid.Row="1" Grid.Column="0" Content="Bot build time :"/>
+        <Label Grid.Row="1" Grid.Column="1" Content="{Binding BuildTime}"/>
+        <Label Grid.Row="2" Grid.Column="0" Content="Bot current pos :"/>
+        <Grid Grid.Row="2" Grid.Column="1">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+                <ColumnDefinition Width="auto"/>
+            </Grid.ColumnDefinitions>
+            
+            <Label Grid.Column="0" Content="("/>
+            <Label Grid.Column="1" Content="{Binding CurrentPos.X}"/>
+            <Label Grid.Column="2" Content=", "/>
+            <Label Grid.Column="3" Content="{Binding CurrentPos.Y}"/>
+            <Label Grid.Column="4" Content=")"/>
+        </Grid>
+        <Label Grid.Row="3" Grid.Column="0" Content="Bot working :"/>
+        <Label Grid.Row="3" Grid.Column="1" Content="{Binding Working}"/>
+        <Label Grid.Row="4" Grid.Column="0" Content="Command response :"/>
+        <Label Grid.Row="4" Grid.Column="1" Content="{Binding Response}"/>
+
+        <Grid Grid.Column="3" Grid.RowSpan="5" VerticalAlignment="Center">
+            <Grid.RowDefinitions>
+                <RowDefinition Height="50"/>
+                <RowDefinition Height="50"/>
+            </Grid.RowDefinitions>
+            <Button Name="ButtonWork" Grid.Row="0" Content="Work" Width="100" Click="ButtonWork_Click"/>
+            <Button Name="ButtonStop" Grid.Row="1" Content="Stop" Width="100" Click="ButtonStop_Click"/>
+        </Grid>
+
+        <ListView Name="ReportsList" Grid.Row="5" Grid.ColumnSpan="3" ItemsSource="{Binding Reports}"/>
+    </Grid>
+</Page>

@@ -9,8 +9,8 @@ using System.Windows;
 namespace BotFactory
 {
     /// <summary>
-    /// Logique d'interaction pour App.xaml
-    /// </summary>
+    /// Interaction logic for App.xaml
+    /// </summary> 
     public partial class App : Application
     {
     }

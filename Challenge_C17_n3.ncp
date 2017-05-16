@@ -1,0 +1,592 @@
+<Project>
+  <Name>Challenge_C17_n3</Name>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>BotFactory.Models</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>BuildableUnit</Name>
+        <Access>Public</Access>
+        <Location left="152" top="89" />
+        <Size width="197" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">double _builTime = 5</Member>
+        <Member type="Constructor">public BuildableUnit()</Member>
+        <Member type="Constructor">public BuildableUnit(double buildTime)</Member>
+        <Member type="Property">public double BuildTime { get; set; }</Member>
+        <Member type="Property">public string Model { get; }</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>BaseUnit</Name>
+        <Access>Public</Access>
+        <Location left="70" top="487" />
+        <Size width="372" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">double _speed = 1</Member>
+        <Member type="Constructor">public BaseUnit(string name, double speed)</Member>
+        <Member type="Property">public Coordinates CurrentPos { get; set; }</Member>
+        <Member type="Method">public Task MoveAsync(Coordinates currentPos, Coordinates destPos)</Member>
+        <Member type="Property">public string Name { get; set; }</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>ReportingUnit</Name>
+        <Access>Public</Access>
+        <Location left="50" top="307" />
+        <Size width="406" height="122" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public virtual void OnStatusChanged(StatusChangedEventArgs statusChangedEventArgs)</Member>
+        <Member type="Event">public event EventHandler&lt;IStatusChangedEventArgs&gt; UnitStatusChanged</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>StatusChangedEventArgs</Name>
+        <Access>Public</Access>
+        <Location left="567" top="307" />
+        <Size width="248" height="102" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public string NewStatus { get; set; }</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>WorkingUnit</Name>
+        <Access>Public</Access>
+        <Location left="530" top="487" />
+        <Size width="299" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public bool IsWorking { get; set; }</Member>
+        <Member type="Property">public Coordinates ParkingPos { get; set; }</Member>
+        <Member type="Method">public virtual Task&lt;bool&gt; WorkBeginsAsync()</Member>
+        <Member type="Method">public virtual Task&lt;bool&gt; WorkEndsAsync()</Member>
+        <Member type="Property">public Coordinates WorkingPos { get; set; }</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>R2D2</Name>
+        <Access>Public</Access>
+        <Location left="70" top="775" />
+        <Size width="162" height="110" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>HAL</Name>
+        <Access>Public</Access>
+        <Location left="530" top="775" />
+        <Size width="162" height="216" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>T_800</Name>
+        <Access>Public</Access>
+        <Location left="742" top="775" />
+        <Size width="162" height="216" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Wall_E</Name>
+        <Access>Public</Access>
+        <Location left="1046" top="775" />
+        <Size width="162" height="216" />
+        <Collapsed>True</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Generalization" first="4" second="1">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="2" second="0">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Dependency" first="2" second="3">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="1" second="2">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="5" second="4">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>552</X>
+          <Y>685</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Generalization" first="6" second="4">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="7" second="4">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>759</X>
+          <Y>750</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>759</X>
+          <Y>679</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Generalization" first="8" second="4">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>818</X>
+          <Y>681</Y>
+        </BendPoint>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>BotFactory.Common.Tools</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>Coordinates</Name>
+        <Access>Public</Access>
+        <Location left="41" top="51" />
+        <Size width="162" height="130" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public double Y { get; set; }</Member>
+        <Member type="Property">public double X { get; set; }</Member>
+        <Member type="Method">public new bool Equals()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Vector</Name>
+        <Access>Public</Access>
+        <Location left="319" top="40" />
+        <Size width="352" height="145" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public int X { get; set; }</Member>
+        <Member type="Property">public double Y { get; set; }</Member>
+        <Member type="Method">public static Vector FromCoordinates(Coordinates begin, Coordinates end)</Member>
+        <Member type="Method">public double Length()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Dependency" first="1" second="0">
+        <Label>
+        </Label>
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>BotFactory.Factories</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>UnitFactory</Name>
+        <Access>Public</Access>
+        <Location left="41" top="40" />
+        <Size width="500" height="197" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public bool AddWorkableUnitToQueue(Type model, string Name, int parkingPos, int workingPos)</Member>
+        <Member type="Property">public Queue&lt;FactoryQueueElement&gt; Queue { get; set; }</Member>
+        <Member type="Property">public int QueueCapacity { get; set; }</Member>
+        <Member type="Property">public List&lt;ITestingUnit&gt; Storage { get; set; }</Member>
+        <Member type="Property">public int StorageCapacity { get; set; }</Member>
+        <Member type="Constructor">public UnitFactory(int queueCapacity, int storageCapacity)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>FactoryQueueElement</Name>
+        <Access>Public</Access>
+        <Location left="672" top="55" />
+        <Size width="533" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public Type Model { set; }</Member>
+        <Member type="Property">public string Name { get; set; }</Member>
+        <Member type="Property">public Coordinates ParkingPos { get; set; }</Member>
+        <Member type="Property">public Coordinates WorkingPos { get; set; }</Member>
+        <Member type="Constructor">public FactoryQueueElement(Type model, string name, Coordinates parkingPos, Coordinates workingPos)</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>FactoryProgressEventArgs</Name>
+        <Access>Public</Access>
+        <Location left="176" top="331" />
+        <Size width="264" height="216" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Dependency" first="0" second="1">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Dependency" first="0" second="2">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>BotFactoryRecap</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Class">
+        <Name>WorkingUnit</Name>
+        <Access>Public</Access>
+        <Location left="550" top="507" />
+        <Size width="328" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public bool IsWorking { get; set; }</Member>
+        <Member type="Property">public Coordinates ParkingPos { get; set; }</Member>
+        <Member type="Method">public virtual void WorkBeginsAsync()</Member>
+        <Member type="Method">public virtual void WorkEndsAsync()</Member>
+        <Member type="Property">public Coordinates WorkingPos { get; set; }</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>BaseUnit</Name>
+        <Access>Public</Access>
+        <Location left="144" top="507" />
+        <Size width="232" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">double _speed = 1</Member>
+        <Member type="Constructor">public BaseUnit(string name, double speed)</Member>
+        <Member type="Property">public Coordinates CurrentPos { get; set; }</Member>
+        <Member type="Method">public void MoveAsync(Coordinates coordinates)</Member>
+        <Member type="Property">public int Name { get; set; }</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Wall_E</Name>
+        <Access>Public</Access>
+        <Location left="1066" top="795" />
+        <Size width="162" height="77" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>T_800</Name>
+        <Access>Public</Access>
+        <Location left="762" top="795" />
+        <Size width="162" height="77" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>HAL</Name>
+        <Access>Public</Access>
+        <Location left="550" top="795" />
+        <Size width="162" height="77" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>R2D2</Name>
+        <Access>Public</Access>
+        <Location left="90" top="795" />
+        <Size width="162" height="77" />
+        <Collapsed>False</Collapsed>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>StatusChangedEventArgs</Name>
+        <Access>Public</Access>
+        <Location left="587" top="327" />
+        <Size width="248" height="102" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public string NewStatus { get; set; }</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>ReportingUnit</Name>
+        <Access>Public</Access>
+        <Location left="70" top="327" />
+        <Size width="406" height="122" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">public virtual void OnStatusChanged(StatusChangedEventArgs statusChangedEventArgs)</Member>
+        <Member type="Event">public event EventHandler UnitStatusChanged</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>BuildableUnit</Name>
+        <Access>Public</Access>
+        <Location left="172" top="109" />
+        <Size width="197" height="162" />
+        <Collapsed>False</Collapsed>
+        <Member type="Field">double _BuilTime = 5</Member>
+        <Member type="Constructor">public BuildableUnit()</Member>
+        <Member type="Constructor">public BuildableUnit(double buildTime)</Member>
+        <Member type="Property">public double BuildTime { get; set; }</Member>
+        <Member type="Property">public string Model { get; set; }</Member>
+        <Modifier>Abstract</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Vector</Name>
+        <Access>Public</Access>
+        <Location left="1214" top="51" />
+        <Size width="352" height="145" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public int X { get; set; }</Member>
+        <Member type="Property">public double Y { get; set; }</Member>
+        <Member type="Method">public static Vector FromCoordinates(Coordinates begin, Coordinates end)</Member>
+        <Member type="Method">public double Length()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Class">
+        <Name>Coordinates</Name>
+        <Access>Public</Access>
+        <Location left="1304" top="354" />
+        <Size width="162" height="130" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">public double Y { get; set; }</Member>
+        <Member type="Property">public double X { get; set; }</Member>
+        <Member type="Method">public new bool Equals()</Member>
+        <Modifier>None</Modifier>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IUnitFactory</Name>
+        <Access>Public</Access>
+        <Location left="564" top="1164" />
+        <Size width="542" height="182" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">bool AddWorkableUnitToQueue(Type type, string Name, Coordinates parkingPos, Coordinates workingPos)</Member>
+        <Member type="Event">event EventHandler FactoryStatus</Member>
+        <Member type="Property">Queue&lt;FactoryQueueElement&gt; Queue { get; set; }</Member>
+        <Member type="Property">int QueueFreeSlots { get; set; }</Member>
+        <Member type="Property">TimeSpan QueueTime { get; set; }</Member>
+        <Member type="Property">Queue&lt;ITestingUnit&gt; Storage { get; set; }</Member>
+        <Member type="Property">int StorageFreeSlots { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IReportingUnit</Name>
+        <Access>Public</Access>
+        <Location left="64" top="1242" />
+        <Size width="404" height="96" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">void OnStatusChanged(StatusChangedEventArgs statusChangedEventArgs)</Member>
+        <Member type="Event">event EventHandler UnitStatusChanged</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IBaseUnit</Name>
+        <Access>Public</Access>
+        <Location left="90" top="1078" />
+        <Size width="162" height="116" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">Coordinates CurrentPos { get; set; }</Member>
+        <Member type="Method">void Move(Coordinates coordinates)</Member>
+        <Member type="Property">string Name { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IBuidableUnit</Name>
+        <Access>Public</Access>
+        <Location left="325" top="1078" />
+        <Size width="197" height="100" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">double BuildTime { get; set; }</Member>
+        <Member type="Property">string Model { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IFactoryQueueElement</Name>
+        <Access>Public</Access>
+        <Location left="1161" top="1201" />
+        <Size width="224" height="135" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">Type Model { get; set; }</Member>
+        <Member type="Property">string Name { get; set; }</Member>
+        <Member type="Property">Coordinates ParkingPos { get; set; }</Member>
+        <Member type="Property">Coordinates WorkingPos { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IStatusChangedEventArgs</Name>
+        <Access>Public</Access>
+        <Location left="90" top="1400" />
+        <Size width="186" height="79" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">string NewStatus { get; set; }</Member>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Generalization" first="2" second="0">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>838</X>
+          <Y>701</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Generalization" first="3" second="0">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>779</X>
+          <Y>770</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>779</X>
+          <Y>699</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Generalization" first="4" second="0">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="5" second="0">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>572</X>
+          <Y>705</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Generalization" first="1" second="7">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Dependency" first="7" second="6">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="7" second="8">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="0" second="1">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Dependency" first="9" second="10">
+        <Label>
+        </Label>
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>1388</X>
+          <Y>232</Y>
+        </BendPoint>
+        <BendPoint relativeToStartShape="False">
+          <X>1388</X>
+          <Y>305</Y>
+        </BendPoint>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+  <ProjectItem type="NClass.DiagramEditor.ClassDiagram.Diagram" assembly="NClass.DiagramEditor, Version=2.4.1823.0, Culture=neutral, PublicKeyToken=null">
+    <Name>BotFactory.Common.Interface</Name>
+    <Language>CSharp</Language>
+    <Entities>
+      <Entity type="Interface">
+        <Name>IStatusChangedEventArgs</Name>
+        <Access>Public</Access>
+        <Location left="113" top="533" />
+        <Size width="186" height="79" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">string NewStatus { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IUnitFactory</Name>
+        <Access>Public</Access>
+        <Location left="444" top="683" />
+        <Size width="618" height="182" />
+        <Collapsed>False</Collapsed>
+        <Member type="Method">bool AddWorkableUnitToQueue(Type type, string Name, Coordinates parkingPos, Coordinates workingPos)</Member>
+        <Member type="Event">event EventHandler FactoryStatus</Member>
+        <Member type="Property">Queue&lt;FactoryQueueElement&gt; Queue { get; set; }</Member>
+        <Member type="Property">int QueueFreeSlots { get; set; }</Member>
+        <Member type="Property">TimeSpan QueueTime { get; set; }</Member>
+        <Member type="Property">List&lt;ITestingUnit&gt; Storage { get; set; }</Member>
+        <Member type="Property">int StorageFreeSlots { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IFactoryQueueElement</Name>
+        <Access>Public</Access>
+        <Location left="1011" top="96" />
+        <Size width="224" height="135" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">Type Model { set; }</Member>
+        <Member type="Property">string Name { get; set; }</Member>
+        <Member type="Property">Coordinates ParkingPos { get; set; }</Member>
+        <Member type="Property">Coordinates WorkingPos { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>ITestingUnit</Name>
+        <Access>Public</Access>
+        <Location left="382" top="240" />
+        <Size width="224" height="233" />
+        <Collapsed>False</Collapsed>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IBuidableUnit</Name>
+        <Access>Public</Access>
+        <Location left="35" top="54" />
+        <Size width="197" height="100" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">double BuildTime { get; set; }</Member>
+        <Member type="Property">string Model { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IBaseUnit</Name>
+        <Access>Public</Access>
+        <Location left="320" top="35" />
+        <Size width="368" height="116" />
+        <Collapsed>False</Collapsed>
+        <Member type="Property">Coordinates CurrentPos { get; set; }</Member>
+        <Member type="Method">Task MoveAsync(Coordinates currentPos, Coordinates destPos)</Member>
+        <Member type="Property">string Name { get; set; }</Member>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IWorkingUnit</Name>
+        <Access>Public</Access>
+        <Location left="1044" top="335" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+      </Entity>
+      <Entity type="Interface">
+        <Name>IFactoryProgress</Name>
+        <Access>Public</Access>
+        <Location left="113" top="669" />
+        <Size width="162" height="216" />
+        <Collapsed>False</Collapsed>
+      </Entity>
+    </Entities>
+    <Relationships>
+      <Relationship type="Generalization" first="3" second="4">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="False">
+          <X>131</X>
+          <Y>206</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Generalization" first="3" second="5">
+        <StartOrientation>Vertical</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>494</X>
+          <Y>171</Y>
+        </BendPoint>
+      </Relationship>
+      <Relationship type="Generalization" first="3" second="6">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Horizontal</EndOrientation>
+      </Relationship>
+      <Relationship type="Generalization" first="3" second="2">
+        <StartOrientation>Horizontal</StartOrientation>
+        <EndOrientation>Vertical</EndOrientation>
+        <BendPoint relativeToStartShape="True">
+          <X>650</X>
+          <Y>286</Y>
+        </BendPoint>
+      </Relationship>
+    </Relationships>
+  </ProjectItem>
+</Project>

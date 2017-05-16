@@ -4,7 +4,7 @@
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Debug</Configuration>
     <Platform Condition=" '$(Platform)' == '' ">AnyCPU</Platform>
-    <ProjectGuid>{236745FC-B823-4B9B-8B83-3F76DD5B234C}</ProjectGuid>
+    <ProjectGuid>{90845D20-0A0B-4D85-B38C-4DF4A8FA2FAD}</ProjectGuid>
     <OutputType>WinExe</OutputType>
     <AppDesignerFolder>Properties</AppDesignerFolder>
     <RootNamespace>BotFactory</RootNamespace>
@@ -14,6 +14,8 @@
     <ProjectTypeGuids>{60dc8134-eba5-43b8-bcc9-bb4bc16c2548};{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}</ProjectTypeGuids>
     <WarningLevel>4</WarningLevel>
     <AutoGenerateBindingRedirects>true</AutoGenerateBindingRedirects>
+    <NuGetPackageImportStamp>
+    </NuGetPackageImportStamp>
   </PropertyGroup>
   <PropertyGroup Condition=" '$(Configuration)|$(Platform)' == 'Debug|AnyCPU' ">
     <PlatformTarget>AnyCPU</PlatformTarget>
@@ -35,6 +37,9 @@
     <WarningLevel>4</WarningLevel>
   </PropertyGroup>
   <ItemGroup>
+    <Reference Include="Microsoft.QualityTools.Testing.Fakes, Version=12.0.0.0, Culture=neutral, PublicKeyToken=b03f5f7f11d50a3a, processorArchitecture=MSIL">
+      <SpecificVersion>False</SpecificVersion>
+    </Reference>
     <Reference Include="System" />
     <Reference Include="System.Data" />
     <Reference Include="System.Xml" />
@@ -55,6 +60,15 @@
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
     </ApplicationDefinition>
+    <Compile Include="Pages\FactoryTest.xaml.cs">
+      <DependentUpon>FactoryTest.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Pages\UnitTest.xaml.cs">
+      <DependentUpon>UnitTest.xaml</DependentUpon>
+    </Compile>
+    <Compile Include="Tools\FactoryDataContext.cs" />
+    <Compile Include="Tools\DataContext.cs" />
+    <Compile Include="Tools\UnitDataContext.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>
       <SubType>Designer</SubType>
@@ -67,6 +81,14 @@
       <DependentUpon>MainWindow.xaml</DependentUpon>
       <SubType>Code</SubType>
     </Compile>
+    <Page Include="Pages\FactoryTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
+    <Page Include="Pages\UnitTest.xaml">
+      <SubType>Designer</SubType>
+      <Generator>MSBuild:Compile</Generator>
+    </Page>
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Properties\AssemblyInfo.cs">
@@ -94,6 +116,23 @@
   </ItemGroup>
   <ItemGroup>
     <None Include="App.config" />
+  </ItemGroup>
+  <ItemGroup>
+    <Folder Include="Fakes\" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\BotFactory.Common\BotFactory.Common.csproj">
+      <Project>{23d59664-3226-4c2c-89ee-7057b9001a2f}</Project>
+      <Name>BotFactory.Common</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BotFactory.Factories\BotFactory.Factories.csproj">
+      <Project>{0922a7cb-117b-4964-94c4-d3a1e72a60e0}</Project>
+      <Name>BotFactory.Factories</Name>
+    </ProjectReference>
+    <ProjectReference Include="..\BotFactory.Models\BotFactory.Models.csproj">
+      <Project>{ebbe5846-17b4-4a69-a89d-7879eb308351}</Project>
+      <Name>BotFactory.Models</Name>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
   <!-- To modify your build process, add your task inside one of the targets below and uncomment it. 
