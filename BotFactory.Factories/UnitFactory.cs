@@ -162,8 +162,8 @@ namespace BotFactory.Factories
                 }
                 else
                 {
-                    this._isWaiting = true;
-                    Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Thread de construction en attente.");
+                    //this._isWaiting = true;
+                    //Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Thread de construction en attente.");
                     //event_1.WaitOne();
                 }
             };

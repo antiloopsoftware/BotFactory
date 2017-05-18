@@ -36,7 +36,8 @@ namespace BotFactory.Pages
         {
             _dataContext.ForceUpdate();
 
-            // This is required without an observablecollection
+            // This block is is required without an observablecollection
+            //[[
 
             // http://dotnetpattern.com/wpf-dispatcher
             // Dispatcher provides two methods for registering method to execute into the message queue.
@@ -57,11 +58,12 @@ namespace BotFactory.Pages
                  StorageList.ItemsSource = _dataContext.Builder.Storage;
              }));*/
 
-            // INIT ?
-            //QueueList.ItemsSource = _dataContext.Builder.Queue;
+            //]]
 
-            //StorageList.ItemsSource = new List<ITestingUnit>();
-           // StorageList.ItemsSource = _dataContext.Builder.Storage;
+            // AVOID GLITCH IN LISTVIEW
+            QueueList.ItemsSource = _dataContext.Builder.Queue;
+            StorageList.ItemsSource = _dataContext.Builder.Storage;
+
         }
         private void AddUnitToQueue_Click(object sender, System.Windows.RoutedEventArgs e)
         {

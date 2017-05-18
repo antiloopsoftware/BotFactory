@@ -106,8 +106,6 @@ namespace BotFactory.Tools
             set
             {
                 OnPropertyChanged(nameof(Queue));
-              //  _builder.Queue = value.ToList<IFactoryQueueElement>();
-
             }
         }
 
@@ -120,7 +118,6 @@ namespace BotFactory.Tools
             set
             {
                 OnPropertyChanged(nameof(Storage));
-           //     _builder.Storage = value.ToList<ITestingUnit>();
             }
         }
 
