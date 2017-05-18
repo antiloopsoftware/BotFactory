@@ -36,7 +36,7 @@ namespace BotFactory.Pages
         {
             _dataContext.ForceUpdate();
 
-            // This is
+            // This is required without an observablecollection
 
             // http://dotnetpattern.com/wpf-dispatcher
             // Dispatcher provides two methods for registering method to execute into the message queue.
