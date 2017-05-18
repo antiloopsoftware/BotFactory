@@ -57,15 +57,15 @@
                 <Label Grid.Column="1" Grid.Row="4" Content="{Binding QueueTime}"/>
 
             </Grid>
-            
-            <ListView Grid.Column="1" ItemsSource="{Binding Queue}" BorderBrush="Black" BorderThickness="1">
+
+            <ListView Grid.Column="1" Name="QueueList" ItemsSource="{Binding Queue}" BorderBrush="Black" BorderThickness="1">
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Label Content="{Binding Model.Name}"/>
                     </DataTemplate>
                 </ListView.ItemTemplate>
             </ListView>
-            <ListView Grid.Column="2" Name="StorageList" ItemsSource="{Binding Storage}" BorderBrush="Black" BorderThickness="1" SelectionChanged="StorageList_SelectionChanged" SelectionMode="Single">
+            <ListView Grid.Column="2" Name="StorageList" ItemsSource="{Binding Storage}" BorderBrush="Black" BorderThickness="1" SelectionChanged="StorageList_SelectionChanged" SelectionMode="Single" >
                 <ListView.ItemTemplate>
                     <DataTemplate>
                         <Grid>

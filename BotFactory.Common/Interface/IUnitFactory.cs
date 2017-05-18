@@ -1,6 +1,7 @@
 using BotFactory.Common.Tools;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 
 namespace BotFactory.Common.Interface
 {
@@ -13,11 +14,13 @@ namespace BotFactory.Common.Interface
         List<IFactoryQueueElement> Queue
         {
             get;
+            set;
         }
 
         List<ITestingUnit> Storage
         {
             get;
+            set;
         }
 
         int QueueFreeSlots

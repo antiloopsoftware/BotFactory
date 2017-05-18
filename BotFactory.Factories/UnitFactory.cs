@@ -7,6 +7,11 @@ using System.Globalization;
 using System.Reflection;
 using System.Threading;
 using System.Linq;
+using System.ComponentModel;
+using System.Windows.Threading;
+using System.Windows.Data;
+using System.Threading.Tasks;
+using System.Collections.ObjectModel;
 
 namespace BotFactory.Factories
 {
@@ -29,9 +34,11 @@ namespace BotFactory.Factories
 
         private List<IFactoryQueueElement> _queue;
         private List<ITestingUnit> _storage;
-        private Thread thread;
+        //private Thread thread;
         private static AutoResetEvent event_1 = new AutoResetEvent(false);
         private TimeSpan _queueTime;
+        private object _lock = new object();
+
 
         public UnitFactory(int queueCapacity, int storageCapacity)
         {
@@ -46,10 +53,15 @@ namespace BotFactory.Factories
 
             //ON INITIALISE L'OBJECT THREAD EN LUI PASSANT LA MÉTHODE
             //À EXÉCUTER DANS LE NOUVEAU THREAD
-            thread = new Thread(BuildingQueue);
+            /*  thread = new Thread(BuildingQueue);
 
-            //COMMENCER L'EXÉCUTION DU THREAD
-            thread.Start();
+              //COMMENCER L'EXÉCUTION DU THREAD
+              thread.Start();*/
+
+            // ou
+
+            // THIS CREATE A SEPARATED THREAD FOR THE TASK
+            Task.Run(() => BuildingQueueAsync());
         }
 
         public bool AddWorkableUnitToQueue(Type model, string name, Coordinates parkingPos, Coordinates workingPos)
@@ -66,13 +78,13 @@ namespace BotFactory.Factories
                 // PLACER LA COMMANDE DANS LA QUEUE
                 Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {model}; nom : {name} ; coordonnées place de rechargement : {parkingPos.X}, {parkingPos.Y}; coordonnées lieu de travail : {workingPos.X}, {workingPos.X})" + Environment.NewLine);
 
-                _queue.Add(factoryQueueElement);
+                Queue.Add(factoryQueueElement);
 
                 if(_queueFreeSlots > 0)
                     _queueFreeSlots--;
 
-                if (this._isWaiting)
-                    event_1.Set();
+                //if (this._isWaiting)
+                   // event_1.Set();
 
                 return true;
             }
@@ -101,9 +113,10 @@ namespace BotFactory.Factories
             }
         }
 
-        public void BuildingQueue()
+        public async Task BuildingQueueAsync()
         {
-            while (Thread.CurrentThread.IsAlive)
+            //while (Thread.CurrentThread.IsAlive)
+            while (true)
             {
                 if (_queue.Count > 0 && _storageFreeSlots > 0)
                 {
@@ -113,7 +126,7 @@ namespace BotFactory.Factories
                         this._isBuilding = true;
 
                         IFactoryQueueElement fqe = _queue.FirstOrDefault();
-                        _queue.RemoveAt(0);
+                        Queue.RemoveAt(0);
 
                         if (fqe != null)
                         {
@@ -128,7 +141,7 @@ namespace BotFactory.Factories
                                                                                         BindingFlags.OptionalParamBinding,
                                                                                         null, new object[] { fqe.Model.ToString() + Guid.NewGuid(), Type.Missing }, CultureInfo.CurrentCulture);
 
-                            Thread.Sleep(TimeSpan.FromSeconds(uf.BuildTime));
+                            await Task.Delay(TimeSpan.FromSeconds(uf.BuildTime));
 
                             Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'un robot dans l'entrepôt (nom : {fqe.Name})");
 
@@ -143,7 +156,7 @@ namespace BotFactory.Factories
                             this._isBuilding = false;
 
                             OnFactoryChanged(new EventArgs());
-                            OnStatusChanged(new StatusChangedEventArgs() { NewStatus = "NOUVEAU ROBOT PRÊT A ETRE TESTE" });
+                            OnStatusChanged(new StatusChangedEventArgs() { NewStatus = "NOUVEAU ROBOT PRÊT A ÊTRE TESTÉ" });
                         }
                     }
                 }
@@ -151,7 +164,7 @@ namespace BotFactory.Factories
                 {
                     this._isWaiting = true;
                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Thread de construction en attente.");
-                    event_1.WaitOne();
+                    //event_1.WaitOne();
                 }
             };
         }
@@ -205,11 +218,16 @@ namespace BotFactory.Factories
         /// <summary>
         /// Queue contenant les commandes à fabriquer
         /// </summary>
-        List<IFactoryQueueElement> IUnitFactory.Queue
+        public List<IFactoryQueueElement> Queue
         {
             get
             {
                 return _queue;
+            }
+
+            set
+            {
+                _queue = value;
             }
         }
 
@@ -218,6 +236,10 @@ namespace BotFactory.Factories
             get
             {
                 return _storage;
+            }
+            set
+            {
+                _storage = value;
             }
         }
 
@@ -239,7 +261,7 @@ namespace BotFactory.Factories
 
         ~UnitFactory()
         {
-            thread.Abort();
+            //thread.Abort();
         }
     }
 }

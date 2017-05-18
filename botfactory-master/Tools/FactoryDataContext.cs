@@ -4,6 +4,7 @@ using BotFactory.Factories;
 using BotFactory.Models;
 using System;
 using System.Collections.Generic;
+using System.Collections.ObjectModel;
 using System.ComponentModel;
 using System.Linq;
 
@@ -96,27 +97,30 @@ namespace BotFactory.Tools
             }
         }
 
-        public List<IFactoryQueueElement> Queue
+        public ObservableCollection<IFactoryQueueElement> Queue
         {
             get
             {
-                return _builder.Queue;
+                return new ObservableCollection<IFactoryQueueElement>(_builder.Queue);
             }
             set
             {
                 OnPropertyChanged(nameof(Queue));
+              //  _builder.Queue = value.ToList<IFactoryQueueElement>();
+
             }
         }
 
-        public List<ITestingUnit> Storage
+        public ObservableCollection<ITestingUnit> Storage
         {
             get
             {
-                return _builder.Storage;
+                return new ObservableCollection<ITestingUnit>(_builder.Storage);
             }
             set
             {
                 OnPropertyChanged(nameof(Storage));
+           //     _builder.Storage = value.ToList<ITestingUnit>();
             }
         }
 

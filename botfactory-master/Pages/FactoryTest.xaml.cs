@@ -4,6 +4,10 @@ using BotFactory.Common.Tools;
 using BotFactory.Factories;
 using BotFactory.Tools;
 using System;
+using System.Collections.Generic;
+using System.Collections.Specialized;
+using System.ComponentModel;
+using System.Threading;
 using System.Windows.Controls;
 
 namespace BotFactory.Pages
@@ -14,7 +18,7 @@ namespace BotFactory.Pages
     public partial class FactoryTest : Page
     {
         FactoryDataContext _dataContext = new FactoryDataContext();
-        UnitTest _unitTestPage;
+        UnitTest _unitTestPage; 
 
         public FactoryTest()
         {
@@ -27,9 +31,37 @@ namespace BotFactory.Pages
             _dataContext.Builder = factory;
             _dataContext.Builder.FactoryStatus += Builder_FactoryProgress;
         }
+
         private void Builder_FactoryProgress(object sender, EventArgs e)
         {
             _dataContext.ForceUpdate();
+
+            // This is
+
+            // http://dotnetpattern.com/wpf-dispatcher
+            // Dispatcher provides two methods for registering method to execute into the message queue.
+            //
+            // Invoke method takes an Action or Delegate and execute the method synchronously. 
+            //
+            //That means it does not return until the Dispatcher complete the execution of the method.
+            // BeginInvoke method take a Delegate but it executes the method asynchronously.
+            // That means it immediately returns before calling the method.
+
+            /* Dispatcher.BeginInvoke((Action)(() =>
+             {
+                 // INIT ?
+                 QueueList.ItemsSource = new List<IFactoryQueueElement>();
+                 QueueList.ItemsSource = _dataContext.Builder.Queue;
+
+                 StorageList.ItemsSource = new List<ITestingUnit>();
+                 StorageList.ItemsSource = _dataContext.Builder.Storage;
+             }));*/
+
+            // INIT ?
+            //QueueList.ItemsSource = _dataContext.Builder.Queue;
+
+            //StorageList.ItemsSource = new List<ITestingUnit>();
+           // StorageList.ItemsSource = _dataContext.Builder.Storage;
         }
         private void AddUnitToQueue_Click(object sender, System.Windows.RoutedEventArgs e)
         {
