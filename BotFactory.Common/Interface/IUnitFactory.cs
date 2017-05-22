@@ -8,47 +8,21 @@ namespace BotFactory.Common.Interface
 	public interface IUnitFactory
 	{
         bool AddWorkableUnitToQueue(Type model, string Name, Coordinates parkingPos, Coordinates workingPos);
-        
-       event EventHandler FactoryStatus;
 
-        List<IFactoryQueueElement> Queue
-        {
-            get;
-            set;
-        }
+        event FactoryProgress FactoryProgress;
 
-        List<ITestingUnit> Storage
-        {
-            get;
-            set;
-        }
+        List<IFactoryQueueElement> Queue { get; set; }
 
-        int QueueFreeSlots
-		{
-			get;
-			set;
-		}
+        List<ITestingUnit> Storage { get; set; }
 
-		TimeSpan QueueTime
-		{
-			get;
-			set;
-		}
+        int QueueFreeSlots { get; set; }
 
-		int StorageFreeSlots
-		{
-			get;
-			set;
-		}
+        TimeSpan QueueTime { get; set; }
 
-        int QueueCapacity
-        {
-            get;
-        }
+        int StorageFreeSlots { get; set; }
 
-        int StorageCapacity
-        {
-            get;
-        }
+        int QueueCapacity { get; set; }
+
+        int StorageCapacity { get; set; }
     }
 }

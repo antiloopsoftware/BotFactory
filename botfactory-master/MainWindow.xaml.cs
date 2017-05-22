@@ -12,6 +12,7 @@ namespace BotFactory
     {
         private DataContext _dataContext = new DataContext();
         private FactoryTest _factoryTestPage = new FactoryTest();
+
         public MainWindow()
         {
             InitializeComponent();

@@ -1,43 +1,18 @@
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BotFactory.Common.Tools
 {
     public class Coordinates : Object
     {
-        private double _x;
-        private double _y;
-
-        public Coordinates(double X, double Y)
+        public Coordinates(double x, double y)
         {
-            _x = X;
-            _y = Y;
+            X = x;
+            Y = y;
         }
 
-        public double Y
-        {
-            get
-            {
-                return _y;
-            }
-            set
-            {
-                _y = value;
-            }
-        }
+        public double Y { get; set; }
 
-        public double X
-        {
-            get
-            {
-                return _x;
-            }
-            set
-            {
-                _x = value;
-            }
-        }
+        public double X { get; set; }
 
         public override bool Equals(Object obj)
         {
@@ -55,7 +30,7 @@ namespace BotFactory.Common.Tools
             }
 
             // Return true if the fields match:
-            return (_x == c.X) && (_y == c.Y);
+            return (X == c.X) && (Y == c.Y);
         }
     }
 }

@@ -29,40 +29,56 @@ namespace BotFactory.Pages
         public void SetTestingFactory(UnitFactory factory)
         {
             _dataContext.Builder = factory;
-            _dataContext.Builder.FactoryStatus += Builder_FactoryProgress;
+            _dataContext.Builder.FactoryProgress += Builder_FactoryProgress;
         }
 
-        private void Builder_FactoryProgress(object sender, EventArgs e)
+        private void Builder_FactoryProgress(object sender, IStatusChangedEventArgs e)
         {
             _dataContext.ForceUpdate();
 
             // This block is is required without an observablecollection
-            //[[
+            // [[
 
             // http://dotnetpattern.com/wpf-dispatcher
             // Dispatcher provides two methods for registering method to execute into the message queue.
             //
             // Invoke method takes an Action or Delegate and execute the method synchronously. 
             //
-            //That means it does not return until the Dispatcher complete the execution of the method.
+            // That means it does not return until the Dispatcher complete the execution of the method.
             // BeginInvoke method take a Delegate but it executes the method asynchronously.
             // That means it immediately returns before calling the method.
 
-            /* Dispatcher.BeginInvoke((Action)(() =>
+             Dispatcher.BeginInvoke((Action)(() =>
              {
                  // INIT ?
                  QueueList.ItemsSource = new List<IFactoryQueueElement>();
+                 // REFRESH ?
                  QueueList.ItemsSource = _dataContext.Builder.Queue;
 
+                 // INIT ?
                  StorageList.ItemsSource = new List<ITestingUnit>();
+                 // REFRESH ?
                  StorageList.ItemsSource = _dataContext.Builder.Storage;
-             }));*/
 
-            //]]
+             }));
 
-            // AVOID GLITCH IN LISTVIEW
-            QueueList.ItemsSource = _dataContext.Builder.Queue;
-            StorageList.ItemsSource = _dataContext.Builder.Storage;
+            // ]]
+            /*
+                        // INIT ?
+                        QueueList.ItemsSource = new List<IFactoryQueueElement>();
+                        // REFRESH ?
+                        QueueList.ItemsSource = _dataContext.Builder.Queue;
+
+                        // INIT ?
+                        StorageList.ItemsSource = new List<ITestingUnit>();
+                        // REFRESH ?
+                        StorageList.ItemsSource = _dataContext.Builder.Storage;*/
+
+          /* QueueList.ItemsSource = new List<IFactoryQueueElement>();
+           
+            QueueList.Items.Refresh();
+             StorageList.ItemsSource = new List<ITestingUnit>();
+            StorageList.Items.Refresh();*/
 
         }
         private void AddUnitToQueue_Click(object sender, System.Windows.RoutedEventArgs e)
@@ -75,6 +91,7 @@ namespace BotFactory.Pages
                 _dataContext.ForceUpdate();
             }
         }
+
         private void UpdateButtonValidity()
         {
             AddUnitToQueue.IsEnabled = ModelsList.SelectedIndex >= 0 && !String.IsNullOrEmpty(UnitName.Text);

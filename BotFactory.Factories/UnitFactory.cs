@@ -12,6 +12,8 @@ using System.Windows.Threading;
 using System.Windows.Data;
 using System.Threading.Tasks;
 using System.Collections.ObjectModel;
+using System.Diagnostics;
+using System.Timers;
 
 namespace BotFactory.Factories
 {
@@ -20,54 +22,45 @@ namespace BotFactory.Factories
         private bool _isWaiting = false;
         private bool _isBuilding = false;
 
-        /// <summary>
-        /// Taille de l’entrepôt
-        /// </summary>
-        private int _storageCapacity;
-        private int _storageFreeSlots;
+        private Thread thread;
+        private static AutoResetEvent autoResetEvent = new AutoResetEvent(false);
 
-        /// <summary>
-        ///  Taille de la queue 
-        /// </summary>
-        private int _queueCapacity;
-        private int _queueFreeSlots;
+        Stopwatch stopwatch;
 
-        private List<IFactoryQueueElement> _queue;
-        private List<ITestingUnit> _storage;
-        //private Thread thread;
-        private static AutoResetEvent event_1 = new AutoResetEvent(false);
-        private TimeSpan _queueTime;
-        private object _lock = new object();
-
+        public event FactoryProgress FactoryProgress;
 
         public UnitFactory(int queueCapacity, int storageCapacity)
         {
-            _queueCapacity = queueCapacity;
-            _storageCapacity = storageCapacity;
+            QueueCapacity = QueueFreeSlots = queueCapacity;
+            StorageCapacity = StorageFreeSlots = storageCapacity;
 
-            _queueFreeSlots = queueCapacity;
-            _storageFreeSlots = storageCapacity;
-
-            _queue = new List<IFactoryQueueElement>();
-            _storage = new List<ITestingUnit>();
+            Queue = new List<IFactoryQueueElement>();
+            Storage = new List<ITestingUnit>();
 
             //ON INITIALISE L'OBJECT THREAD EN LUI PASSANT LA MÉTHODE
             //À EXÉCUTER DANS LE NOUVEAU THREAD
-            /*  thread = new Thread(BuildingQueue);
+            thread = new Thread(BuildingQueue);
 
-              //COMMENCER L'EXÉCUTION DU THREAD
-              thread.Start();*/
+            //COMMENCER L'EXÉCUTION DU THREAD
+            thread.Start();
 
             // ou
 
             // THIS CREATE A SEPARATED THREAD FOR THE TASK
-            Task.Run(() => BuildingQueueAsync());
+            //Task.Run(() => BuildingQueueAsync());
+
+            // http://stackoverflow.com/questions/12535722/what-is-the-best-way-to-implement-a-timer
+
+            /*System.Timers.Timer aTimer = new System.Timers.Timer();
+            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
+            aTimer.Interval = 1000;
+            aTimer.Enabled = true;*/
         }
 
         public bool AddWorkableUnitToQueue(Type model, string name, Coordinates parkingPos, Coordinates workingPos)
         {
             // SI LA QUEUE EST PLEINE
-            if (_queue.Count > _queueCapacity || _queueFreeSlots == 0)
+            if (Queue.Count > QueueCapacity || QueueFreeSlots == 0)
             {
                 return false;
             }
@@ -76,15 +69,22 @@ namespace BotFactory.Factories
                 IFactoryQueueElement factoryQueueElement = new FactoryQueueElement(model, name, parkingPos, workingPos);
 
                 // PLACER LA COMMANDE DANS LA QUEUE
-                Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {model}; nom : {name} ; coordonnées place de rechargement : {parkingPos.X}, {parkingPos.Y}; coordonnées lieu de travail : {workingPos.X}, {workingPos.X})" + Environment.NewLine);
+                Console.WriteLine(
+                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {model}; nom : {name} ; lieu de rechargement : {parkingPos.X}, {parkingPos.Y}; lieu de travail : {workingPos.X}, {workingPos.X})"  
+                    + Environment.NewLine);
 
                 Queue.Add(factoryQueueElement);
 
-                if(_queueFreeSlots > 0)
-                    _queueFreeSlots--;
+                WorkingUnit unitToBeAdded = Activator.CreateInstance(Queue.First().Model) as WorkingUnit;
+                QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
 
-                //if (this._isWaiting)
-                   // event_1.Set();
+                if (QueueFreeSlots > 0)
+                    QueueFreeSlots--;
+
+                if (this._isWaiting)
+                   autoResetEvent.Set();
+
+                FactoryProgress(Queue.First(), new StatusChangedEventArgs("NOUVEAU ROBOT AJOUTÉ DANS LA FILE D'ATTENTE"));
 
                 return true;
             }
@@ -93,7 +93,7 @@ namespace BotFactory.Factories
         public bool CreateWorkableUnitToQueue()
         {
             // SI LA QUEUE EST PLEINE
-            if (_queue.Count > _queueCapacity)
+            if (Queue.Count > QueueCapacity)
             {
                 return false;
             }
@@ -106,7 +106,7 @@ namespace BotFactory.Factories
                     // PLACER LA COMMANDE DANS LA QUEUE
                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {typeof(HAL)}; nom : {"name" + i} ;" + Environment.NewLine);
 
-                    _queue.Add(factoryQueueElement);         
+                    Queue.Add(factoryQueueElement);         
                 }
 
                 return true;
@@ -115,56 +115,74 @@ namespace BotFactory.Factories
 
         public async Task BuildingQueueAsync()
         {
-            //while (Thread.CurrentThread.IsAlive)
-            while (true)
+            await Task.Delay(TimeSpan.FromSeconds(/*uf.BuildTime*/5000));
+        }
+
+        public void BuildingQueue()
+        {
+            stopwatch = new Stopwatch();
+
+            while (Thread.CurrentThread.IsAlive)
             {
-                if (_queue.Count > 0 && _storageFreeSlots > 0)
+                int i = 0;
+
+                if (Queue.Count > 0 && StorageFreeSlots > 0)
                 {
                     if (!this._isBuilding)
                     {
-                        OnFactoryChanged(new EventArgs());
+                        stopwatch.Start();
+
                         this._isBuilding = true;
 
-                        IFactoryQueueElement fqe = _queue.FirstOrDefault();
-                        Queue.RemoveAt(0);
+                        IFactoryQueueElement fqe = Queue.FirstOrDefault();
 
                         if (fqe != null)
                         {
+                            FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT EN CONSTRUCTION"));
+
                             // http://stackoverflow.com/questions/981330/instantiate-an-object-with-a-runtime-determined-type
                             // http://stackoverflow.com/questions/2451336/how-to-pass-parameters-to-activator-createinstancet
 
-                            var uf = (ITestingUnit) Activator.CreateInstance(fqe.Model, BindingFlags.CreateInstance |
+                            /*var uf = (ITestingUnit) Activator.CreateInstance(fqe.Model, BindingFlags.CreateInstance |
                                                                                         BindingFlags.Public |
                                                                                         BindingFlags.Instance |
 
                                                                                         // http://stackoverflow.com/questions/2421994/invoking-methods-with-optional-parameters-through-reflection
                                                                                         BindingFlags.OptionalParamBinding,
-                                                                                        null, new object[] { fqe.Model.ToString() + Guid.NewGuid(), Type.Missing }, CultureInfo.CurrentCulture);
+                                                                                        null, new object[] { fqe.Model.Name + i, fqe.Model, fqe. Type.Missing }, CultureInfo.CurrentCulture);*/
 
-                            await Task.Delay(TimeSpan.FromSeconds(uf.BuildTime));
+                            WorkingUnit unitToBeAdded = Activator.CreateInstance(Queue.First().Model) as WorkingUnit;
+                            Queue.RemoveAt(0);
+                            Thread.Sleep(TimeSpan.FromSeconds(unitToBeAdded.BuildTime));
+                            QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
 
                             Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'un robot dans l'entrepôt (nom : {fqe.Name})");
 
-                            _storage.Add(uf);
+                            Storage.Add(unitToBeAdded);
 
-                            if (_queueFreeSlots < _queueCapacity)
-                                _queueFreeSlots++;
+                            if (QueueFreeSlots < QueueCapacity)
+                                QueueFreeSlots++;
 
-                            if (_storageFreeSlots > 0)
-                                _storageFreeSlots--;
+                            if (StorageFreeSlots > 0)
+                                StorageFreeSlots--;
                             
                             this._isBuilding = false;
 
-                            OnFactoryChanged(new EventArgs());
-                            OnStatusChanged(new StatusChangedEventArgs() { NewStatus = "NOUVEAU ROBOT PRÊT A ÊTRE TESTÉ" });
+                            FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT CONSTRUIT PRÊT A ÊTRE TESTÉ"));
                         }
+
+                        i++;
                     }
                 }
                 else
                 {
-                    //this._isWaiting = true;
-                    //Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Thread de construction en attente.");
-                    //event_1.WaitOne();
+                     this._isWaiting = true;
+                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Thread de construction en attente");
+                     autoResetEvent.WaitOne();
+
+                    stopwatch.Stop();
+
+                    i = 0;
                 }
             };
         }
@@ -172,96 +190,42 @@ namespace BotFactory.Factories
         /// <summary>
         /// Indique l'emplacement libre pour la queue
         /// </summary>
-        public int QueueFreeSlots
+        public int QueueFreeSlots { get; set; }
+
+        public TimeSpan QueueTime { get; set; }
+
+        private void OnTimedEvent(object sender, EventArgs e)
         {
-            get
-            {
-                return _queueFreeSlots;
-            }
-
-            set
-            {
-                _queueFreeSlots = value;
-            }
+            //if(stopwatch != null)
+               // QueueTime = stopwatch.Elapsed;
         }
-
-        public TimeSpan QueueTime
-        {
-            get
-            {
-                return _queueTime;
-            }
-
-            set
-            {
-                _queueTime = value;
-            }
-        }
-
 
         /// <summary>
         ///  Indique l'emplacement libre pour l’entrepôt
         /// </summary>
-        public int StorageFreeSlots
-        {
-            get
-            {
-                return _storageFreeSlots;
-            }
-
-            set
-            {
-                _storageFreeSlots = value;
-            }
-        }
+        public int StorageFreeSlots { get; set; }
 
         /// <summary>
         /// Queue contenant les commandes à fabriquer
         /// </summary>
-        public List<IFactoryQueueElement> Queue
-        {
-            get
-            {
-                return _queue;
-            }
+        public List<IFactoryQueueElement> Queue { get; set; }
 
-            set
-            {
-                _queue = value;
-            }
-        }
+        public List<ITestingUnit> Storage { get; set; }
 
-        public List<ITestingUnit> Storage
-        {
-            get
-            {
-                return _storage;
-            }
-            set
-            {
-                _storage = value;
-            }
-        }
+        public int QueueCapacity { get; set; }
 
-        public int QueueCapacity
-        {
-            get
-            {
-                return _queueCapacity;
-            }
-        }
+        public int StorageCapacity { get; set; }
 
-        public int StorageCapacity
-        {
-            get
-            {
-                return _storageCapacity;
-            }
-        }
+        // finalizer != c++ destructor
+        // Garbage collection is simulating a computer with an infinite amount of memory
+        // If you run the program on a machine with more RAM than the amount of memory required by program :
+        // the null garbage collector is a valid garbage collector, and the null garbage collector never runs finalizers since it never collects anything
+        // When you are finished with a resource, you need to release it by calling Close or Disconnect or whatever cleanup method is available on the object
+        // (The IDisposable interface codifies this convention)
 
         ~UnitFactory()
         {
-            //thread.Abort();
+            // extra cleanup here before their memory is freed
         }
     }
 }

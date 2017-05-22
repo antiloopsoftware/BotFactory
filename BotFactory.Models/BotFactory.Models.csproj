@@ -57,6 +57,7 @@
   <ItemGroup>
     <Compile Include="BuildableUnit.cs" />
     <Compile Include="BaseUnit.cs" />
+    <Compile Include="ConcreteWorkingUnit.cs" />
     <Compile Include="ReportingUnit.cs" />
     <Compile Include="StatusChangedEventArgs.cs" />
     <Compile Include="WorkingUnit.cs" />

@@ -56,6 +56,7 @@
   </ItemGroup>
   <ItemGroup>
     <Compile Include="Coordinates.cs" />
+    <Compile Include="FactoryProgress.cs" />
     <Compile Include="Interface\IBaseUnit.cs" />
     <Compile Include="Interface\IBuidableUnit.cs" />
     <Compile Include="Interface\IFactoryQueueElement.cs" />
@@ -63,6 +64,7 @@
     <Compile Include="Interface\ITestingUnit.cs" />
     <Compile Include="Interface\IUnitFactory.cs" />
     <Compile Include="Interface\IWorkingUnit.cs" />
+    <Compile Include="UnitStatusChanged.cs" />
     <Compile Include="Vector.cs" />
   </ItemGroup>
   <ItemGroup>

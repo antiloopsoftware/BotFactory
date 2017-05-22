@@ -68,6 +68,7 @@
     </Compile>
     <Compile Include="Tools\FactoryDataContext.cs" />
     <Compile Include="Tools\DataContext.cs" />
+    <Compile Include="Tools\FactoryProgress.cs" />
     <Compile Include="Tools\UnitDataContext.cs" />
     <Page Include="MainWindow.xaml">
       <Generator>MSBuild:Compile</Generator>

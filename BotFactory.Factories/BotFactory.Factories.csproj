@@ -59,7 +59,6 @@
   <ItemGroup>
     <Compile Include="UnitFactory.cs" />
     <Compile Include="FactoryQueueElement.cs" />
-    <Compile Include="FactoryProgressEventArgs.cs" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\BotFactory.Common\BotFactory.Common.csproj">

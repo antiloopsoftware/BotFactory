@@ -1,77 +1,76 @@
+using BotFactory.Common.Interface;
 using BotFactory.Common.Tools;
 using BotFactory.Common.Tools.Interfaces;
 using System.Threading.Tasks;
+using System;
 
 namespace BotFactory.Models
 {
-	public abstract class WorkingUnit : BaseUnit, IWorkingUnit
+	public abstract class WorkingUnit : BaseUnit, ITestingUnit
 	{
-        bool _isWorking;
-        Coordinates _parkingPos;
-        Coordinates _workingPos;
-
-        public WorkingUnit(string name, double speed = 1) : base(name, speed)
+        public WorkingUnit(string name = "Sans nom", string model = "Sans nom", double speed = 5.0, double buildTime = 5.0) : base(name, model, speed, buildTime)
         {
+            ParkingPos = new Coordinates(0, 0);
+            WorkingPos = new Coordinates(0, 0);
+            IsWorking = false;
         }
 
-        public bool IsWorking
-		{
-			get
-			{
-                return _isWorking;	
-			}
-			set
-			{
-                _isWorking = IsWorking;
-			}
-		}
+        event EventHandler<EventArgs> ITestingUnit.UnitStatusChanged
+        {
+            add
+            {
+                //throw new NotImplementedException();
+            }
 
-		public Coordinates ParkingPos
-		{
-			get
-			{
-                return _parkingPos;
-			}
-			set
-			{
-                _parkingPos = value;
-			}
-		}
+            remove
+            {
+                //throw new NotImplementedException();
+            }
+        }
+
+        public bool IsWorking { get; set; }
+
+		public Coordinates ParkingPos { get; set; }
 
         /// <summary>
         /// see http://www.e-naxos.com/Blog/post/De-la-bonne-utilisation-de-AsyncAwait-en-C.aspx
         /// </summary>
         /// <returns></returns>
-		public async virtual Task<bool> WorkBeginsAsync()
+		public virtual async Task<bool> WorkBeginsAsync()
 		{
-            await MoveAsync(base.CurrentPos, _workingPos);
-            if(CurrentPos.Equals(_workingPos))
+            var result = await MoveAsync(base.CurrentPos, WorkingPos);
+
+            if (CurrentPos.Equals(WorkingPos))
             {
-                _isWorking = true;
+                IsWorking = true;
+
+                OnStatusChanged(this, new StatusChangedEventArgs("Je commence à travailler"));
             }
-            return _isWorking;
-		}
 
-		public async virtual Task<bool> WorkEndsAsync()
-		{
-            await MoveAsync(base.CurrentPos, _parkingPos);
-
-            if (base.CurrentPos.Equals(_parkingPos))
-                return true;
-            else
-                return false;
+            return result && IsWorking;
         }
 
-		public Coordinates WorkingPos
+		public virtual async Task<bool> WorkEndsAsync()
 		{
-			get
-			{
-                return _workingPos;
-			}
-			set
-			{
-                _workingPos = value;
-			}
-		}
-	}
+            var result = await MoveAsync(base.CurrentPos, ParkingPos);
+
+            if (CurrentPos.Equals(ParkingPos))
+            {
+                IsWorking = false;
+
+                OnStatusChanged(this, new StatusChangedEventArgs("Je termine de travailler"));
+            }
+
+            return result && !IsWorking;
+        }
+
+		public Coordinates WorkingPos { get; set; }
+
+        Type IFactoryQueueElement.Model
+        {
+            get;
+
+            set;
+        }
+    }
 }

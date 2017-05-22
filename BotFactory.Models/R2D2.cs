@@ -1,38 +1,14 @@
 using BotFactory.Common.Interface;
+using BotFactory.Common.Tools;
 using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BotFactory.Models
 {
-    public class R2D2 : WorkingUnit, ITestingUnit
+    public class R2D2 : WorkingUnit
     {
-        string _name;
-        double? _speed;
-
-        public R2D2(string name, double speed = 1) : base(name, speed)
+        public R2D2() : base(null, "R2D2", 1.5, 5.5)
         {
-            _name = name;
-            _speed = speed;
-        }
-
-        Type IFactoryQueueElement.Model
-        {
-            get;
-            set;
-        }
-
-        event EventHandler<EventArgs> ITestingUnit.UnitStatusChanged
-        {
-            add
-            {
-               
-            }
-
-            remove
-            {
-                
-            }
+            WorkingPos = new Coordinates(2.0, 2.0);
         }
     }
 }

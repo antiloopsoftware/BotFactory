@@ -4,19 +4,11 @@ namespace BotFactory.Models
 {
 	public class StatusChangedEventArgs : IStatusChangedEventArgs
     {
+        public StatusChangedEventArgs(string newStatus)
+        {
+            NewStatus = newStatus;
+        }
 
-        private string _newStatus;
-
-		public string NewStatus
-		{
-			get
-			{
-                return _newStatus;
-			}
-			set
-			{
-                _newStatus = value;
-			}
-		}
+        public string NewStatus	{ get; set; }
 	}
 }

@@ -1,56 +1,40 @@
 using BotFactory.Common.Interface;
 using BotFactory.Common.Tools;
 using System;
-using System.Collections.Generic;
-using System.Text;
 using System.Threading.Tasks;
 
 namespace BotFactory.Models
 {
 	public abstract class BaseUnit : ReportingUnit, IBaseUnit
 	{
-		double _speed;
-        Coordinates _currentPos;
-        string _name;
+        public BaseUnit(string name = "Nameless", string model = "Nameless", double buildTime = 5.0, double speed = 5.0) : base(model, buildTime)
+        {
+            Name = name;
+            Speed = speed;
+            CurrentPos = new Coordinates(0, 0);
+        }
 
-        public BaseUnit(string name, double speed = 1)
+        public Coordinates CurrentPos { get; set; }
+
+		public async Task<bool> MoveAsync(Coordinates currentPos, Coordinates destPos)
 		{
-            _name = name;
-            _speed = speed;
+           CurrentPos = currentPos;
 
-            _currentPos = new Coordinates(0, 0);
-		}
+           OnStatusChanged(this, new StatusChangedEventArgs("Je me déplace")); 
 
-		public Coordinates CurrentPos
-		{
-			get
-			{
-                return _currentPos;
-			}
-			set
-			{
-                _currentPos = value;
-			}
-		}
-
-		public async Task MoveAsync(Coordinates currentPos, Coordinates destPos)
-		{
            Vector v = Vector.FromCoordinates(currentPos, destPos);
            double lenght = v.Length();
-           TimeSpan time = TimeSpan.FromSeconds(lenght / _speed);
+           TimeSpan time = TimeSpan.FromSeconds(lenght / Speed);
            await Task.Delay(time);
+           CurrentPos.X = destPos.X; 
+           CurrentPos.Y= destPos.Y;
+
+
+            return true;
 		}
 
-		public string Name
-		{
-			get
-			{
-                return _name;
-			}
-			set
-			{
-                _name = value;
-			}
-		}
-	}
+		public string Name { get; set; }
+		
+        public double Speed { get; set; }
+    }
 }

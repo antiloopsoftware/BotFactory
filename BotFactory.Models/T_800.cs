@@ -1,36 +1,14 @@
 using BotFactory.Common.Interface;
+using BotFactory.Common.Tools;
 using System;
 
 namespace BotFactory.Models
 {
-    public class T_800 : WorkingUnit, ITestingUnit
+    public class T_800 : WorkingUnit
     {
-        string _name;
-        double _speed;
-
-        public T_800(string name, double speed = 1) : base(name, speed)
+        public T_800() : base(null, "T_800", 3.0, 10.0)
         {
-            _name = name;
-            _speed = speed;
-        }
-
-        Type IFactoryQueueElement.Model
-        {
-            get;
-            set;
-        }
-
-        event EventHandler<EventArgs> ITestingUnit.UnitStatusChanged
-        {
-            add
-            {
-                
-            }
-
-            remove
-            {
-               
-            }
+            WorkingPos = new Coordinates(3.0, 3.5);
         }
     }
 }

@@ -7,41 +7,17 @@ namespace BotFactory.Models
 {
 	public abstract class BuildableUnit : IBuidableUnit
 	{
-		private double _builTime = 5;
-        private string _model;
+		
+		public BuildableUnit(){	}
+        
+        public BuildableUnit(string model = "Sans nom", double buildTime = 5.0)
+        {
+            Model = model;
+            BuildTime = buildTime;
+        }
 
-		public BuildableUnit()
-		{
-			
-		}
-
-		public BuildableUnit(double buildTime)
-		{
-			
-		}
-
-		public double BuildTime
-		{
-			get
-			{
-                return _builTime;
-			}
-			set
-			{
-                _builTime = value;
-			}
-		}
-
-		public string Model
-		{
-			get
-			{
-                return _model;
-			}
-			set
-			{
-                _model = value;
-			}
-		}
-	}
+        public double BuildTime { get; set; }
+	
+		public string Model { get; set; }
+    }
 }

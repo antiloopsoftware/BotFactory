@@ -1,38 +1,16 @@
 using BotFactory.Common.Interface;
+using BotFactory.Common.Tools;
 using System;
 using System.Collections.Generic;
 using System.Text;
 
 namespace BotFactory.Models
 {
-    public class Wall_E : WorkingUnit, ITestingUnit
+    public class Wall_E : WorkingUnit
     {
-        string _name;
-        double _speed;
-
-        public Wall_E(string name, double speed = 1) : base(name, speed)
+        public Wall_E() : base(null, "Wall_E", 2.0, 4.0)
         {
-            _name = name;
-            _speed = speed;
-        }
-
-        Type IFactoryQueueElement.Model
-        {
-            get;
-            set;
-        }
-
-        event EventHandler<EventArgs> ITestingUnit.UnitStatusChanged
-        {
-            add
-            {
-                
-            }
-
-            remove
-            {
-              
-            }
+            WorkingPos = new Coordinates(5.0, 5.0);
         }
     }
 }

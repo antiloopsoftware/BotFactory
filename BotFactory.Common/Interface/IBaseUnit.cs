@@ -8,18 +8,10 @@ namespace BotFactory.Common.Interface
 {
 	public interface IBaseUnit
 	{
-		Coordinates CurrentPos
-		{
-			get;
-			set;
-		}
+		Coordinates CurrentPos { get; set; }
 
-		Task MoveAsync(Coordinates currentPos, Coordinates destPos);
+		Task<bool> MoveAsync(Coordinates currentPos, Coordinates destPos);
 
-		string Name
-		{
-			get;
-			set;
-		}
+		string Name	{ get; set; }
 	}
 }
