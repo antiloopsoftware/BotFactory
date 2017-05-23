@@ -3,17 +3,9 @@ using BotFactory.Common.Tools;
 using BotFactory.Models;
 using System;
 using System.Collections.Generic;
-using System.Globalization;
-using System.Reflection;
 using System.Threading;
 using System.Linq;
-using System.ComponentModel;
-using System.Windows.Threading;
-using System.Windows.Data;
 using System.Threading.Tasks;
-using System.Collections.ObjectModel;
-using System.Diagnostics;
-using System.Timers;
 
 namespace BotFactory.Factories
 {
@@ -25,7 +17,7 @@ namespace BotFactory.Factories
         private Thread thread;
         private static AutoResetEvent autoResetEvent = new AutoResetEvent(false);
 
-        Stopwatch stopwatch;
+        //Stopwatch stopwatch;
 
         public event FactoryProgress FactoryProgress;
 
@@ -66,16 +58,7 @@ namespace BotFactory.Factories
             }
             else
             {
-                IFactoryQueueElement factoryQueueElement = new FactoryQueueElement(model, name, parkingPos, workingPos);
-
-                // PLACER LA COMMANDE DANS LA QUEUE
-                Console.WriteLine(
-                    $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {model}; nom : {name} ; lieu de rechargement : {parkingPos.X}, {parkingPos.Y}; lieu de travail : {workingPos.X}, {workingPos.X})"  
-                    + Environment.NewLine);
-
-                Queue.Add(factoryQueueElement);
-
-                WorkingUnit unitToBeAdded = Activator.CreateInstance(Queue.First().Model) as WorkingUnit;
+                WorkingUnit unitToBeAdded = AddFactoryQueueElement(model, name, parkingPos, workingPos);
                 QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
 
                 if (QueueFreeSlots > 0)
@@ -90,37 +73,23 @@ namespace BotFactory.Factories
             }
         }
 
-        public bool CreateWorkableUnitToQueue()
+        public WorkingUnit AddFactoryQueueElement(Type model, string name, Coordinates parkingPos, Coordinates workingPos)
         {
-            // SI LA QUEUE EST PLEINE
-            if (Queue.Count > QueueCapacity)
-            {
-                return false;
-            }
-            else
-            {
-                for (int i = 0; i < 10; i++)
-                {
-                    IFactoryQueueElement factoryQueueElement = (IFactoryQueueElement)new FactoryQueueElement(typeof(HAL), "name" + i, new Coordinates(1 + i, 2 + i), new Coordinates(3 + i, 4 + i));
+            IFactoryQueueElement factoryQueueElement = new FactoryQueueElement(model, name, parkingPos, workingPos);
 
-                    // PLACER LA COMMANDE DANS LA QUEUE
-                    Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {typeof(HAL)}; nom : {"name" + i} ;" + Environment.NewLine);
+            // PLACER LA COMMANDE DANS LA QUEUE
+            Console.WriteLine(
+                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {model}; nom : {name} ; lieu de rechargement : {parkingPos.X}, {parkingPos.Y}; lieu de travail : {workingPos.X}, {workingPos.X})"
+                + Environment.NewLine);
 
-                    Queue.Add(factoryQueueElement);         
-                }
+            Queue.Add(factoryQueueElement);
 
-                return true;
-            }
-        }
-
-        public async Task BuildingQueueAsync()
-        {
-            await Task.Delay(TimeSpan.FromSeconds(/*uf.BuildTime*/5000));
+            return Activator.CreateInstance(Queue.First().Model) as WorkingUnit;
         }
 
         public void BuildingQueue()
         {
-            stopwatch = new Stopwatch();
+            //stopwatch = new Stopwatch();
 
             while (Thread.CurrentThread.IsAlive)
             {
@@ -130,61 +99,76 @@ namespace BotFactory.Factories
                 {
                     if (!this._isBuilding)
                     {
-                        stopwatch.Start();
+                        //stopwatch.Start();
 
                         this._isBuilding = true;
 
                         IFactoryQueueElement fqe = Queue.FirstOrDefault();
+                        Queue.RemoveAt(0);
 
-                        if (fqe != null)
-                        {
-                            FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT EN CONSTRUCTION"));
+                        FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT EN CONSTRUCTION"));
 
-                            // http://stackoverflow.com/questions/981330/instantiate-an-object-with-a-runtime-determined-type
-                            // http://stackoverflow.com/questions/2451336/how-to-pass-parameters-to-activator-createinstancet
+                        WorkingUnit unitToBeAdded = AddFactoryQueueElementToStorage(fqe);
 
-                            /*var uf = (ITestingUnit) Activator.CreateInstance(fqe.Model, BindingFlags.CreateInstance |
-                                                                                        BindingFlags.Public |
-                                                                                        BindingFlags.Instance |
+                        QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
 
-                                                                                        // http://stackoverflow.com/questions/2421994/invoking-methods-with-optional-parameters-through-reflection
-                                                                                        BindingFlags.OptionalParamBinding,
-                                                                                        null, new object[] { fqe.Model.Name + i, fqe.Model, fqe. Type.Missing }, CultureInfo.CurrentCulture);*/
+                        Thread.Sleep(TimeSpan.FromSeconds(unitToBeAdded.BuildTime));
 
-                            WorkingUnit unitToBeAdded = Activator.CreateInstance(Queue.First().Model) as WorkingUnit;
-                            Queue.RemoveAt(0);
-                            Thread.Sleep(TimeSpan.FromSeconds(unitToBeAdded.BuildTime));
-                            QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
+                        if (QueueFreeSlots < QueueCapacity)
+                            QueueFreeSlots++;
 
-                            Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'un robot dans l'entrepôt (nom : {fqe.Name})");
-
-                            Storage.Add(unitToBeAdded);
-
-                            if (QueueFreeSlots < QueueCapacity)
-                                QueueFreeSlots++;
-
-                            if (StorageFreeSlots > 0)
-                                StorageFreeSlots--;
+                        if (StorageFreeSlots > 0)
+                            StorageFreeSlots--;
                             
-                            this._isBuilding = false;
+                        this._isBuilding = false;
 
-                            FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT CONSTRUIT PRÊT A ÊTRE TESTÉ"));
-                        }
-
-                        i++;
+                        FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT CONSTRUIT ET PRÊT A ÊTRE TESTÉ"));
                     }
+
+                    i++;
                 }
                 else
                 {
-                     this._isWaiting = true;
-                     Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Thread de construction en attente");
-                     autoResetEvent.WaitOne();
+                    this._isWaiting = true;
+                    Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Thread de construction en attente");
+                    autoResetEvent.WaitOne();
 
-                    stopwatch.Stop();
+                    if (Queue.Count == 0)
+                    {
+                        QueueTime = TimeSpan.FromSeconds(0);
+                        i = 0;
+                    }
 
-                    i = 0;
+                    //stopwatch.Stop();
                 }
             };
+        }
+
+        public WorkingUnit AddFactoryQueueElementToStorage(IFactoryQueueElement fqe)
+        {
+            WorkingUnit unitToBeAdded = null;
+
+            if (fqe != null)
+            {
+                // http://stackoverflow.com/questions/981330/instantiate-an-object-with-a-runtime-determined-type
+                // http://stackoverflow.com/questions/2451336/how-to-pass-parameters-to-activator-createinstancet
+
+                /*var uf = (ITestingUnit) Activator.CreateInstance(fqe.Model, BindingFlags.CreateInstance |
+                                                                            BindingFlags.Public |
+                                                                            BindingFlags.Instance |
+
+                                                                            // http://stackoverflow.com/questions/2421994/invoking-methods-with-optional-parameters-through-reflection
+                                                                            BindingFlags.OptionalParamBinding,
+                                                                            null, new object[] { fqe.Model.Name + i, fqe.Model, fqe. Type.Missing }, CultureInfo.CurrentCulture);*/
+
+                unitToBeAdded = Activator.CreateInstance(fqe.Model) as WorkingUnit;
+
+                Storage.Add(unitToBeAdded);
+
+                Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'un robot dans l'entrepôt (nom : {fqe.Name})");
+            }
+
+            return unitToBeAdded;
         }
 
         /// <summary>
@@ -215,6 +199,36 @@ namespace BotFactory.Factories
         public int QueueCapacity { get; set; }
 
         public int StorageCapacity { get; set; }
+
+
+        public async Task BuildingQueueAsync()
+        {
+            await Task.Delay(TimeSpan.FromSeconds(/*uf.BuildTime*/5000));
+        }
+
+
+        public bool CreateWorkableUnitToQueue()
+        {
+            // SI LA QUEUE EST PLEINE
+            if (Queue.Count > QueueCapacity)
+            {
+                return false;
+            }
+            else
+            {
+                for (int i = 0; i < 10; i++)
+                {
+                    IFactoryQueueElement factoryQueueElement = (IFactoryQueueElement)new FactoryQueueElement(typeof(HAL), "name" + i, new Coordinates(1 + i, 2 + i), new Coordinates(3 + i, 4 + i));
+
+                    // PLACER LA COMMANDE DANS LA QUEUE
+                    Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {typeof(HAL)}; nom : {"name" + i} ;" + Environment.NewLine);
+
+                    Queue.Add(factoryQueueElement);
+                }
+
+                return true;
+            }
+        }
 
         // finalizer != c++ destructor
         // Garbage collection is simulating a computer with an infinite amount of memory
