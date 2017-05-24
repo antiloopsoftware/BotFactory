@@ -16,9 +16,6 @@ namespace BotFactory.Factories
 
         private Thread thread;
         private static AutoResetEvent autoResetEvent = new AutoResetEvent(false);
-
-        //Stopwatch stopwatch;
-
         public event FactoryProgress FactoryProgress;
 
         public UnitFactory(int queueCapacity, int storageCapacity)
@@ -40,13 +37,6 @@ namespace BotFactory.Factories
 
             // THIS CREATE A SEPARATED THREAD FOR THE TASK
             //Task.Run(() => BuildingQueueAsync());
-
-            // http://stackoverflow.com/questions/12535722/what-is-the-best-way-to-implement-a-timer
-
-            /*System.Timers.Timer aTimer = new System.Timers.Timer();
-            aTimer.Elapsed += new ElapsedEventHandler(OnTimedEvent);
-            aTimer.Interval = 1000;
-            aTimer.Enabled = true;*/
         }
 
         public bool AddWorkableUnitToQueue(Type model, string name, Coordinates parkingPos, Coordinates workingPos)
@@ -89,8 +79,6 @@ namespace BotFactory.Factories
 
         public void BuildingQueue()
         {
-            //stopwatch = new Stopwatch();
-
             while (Thread.CurrentThread.IsAlive)
             {
                 int i = 0;
@@ -103,8 +91,6 @@ namespace BotFactory.Factories
                 {
                     if (!this._isBuilding)
                     {
-                        //stopwatch.Start();
-
                         this._isBuilding = true;
 
                         IFactoryQueueElement fqe = Queue.FirstOrDefault();
@@ -127,7 +113,8 @@ namespace BotFactory.Factories
                                 CreateAndStoreUnit(fqe);
                             }));
 
-                        // Utilisation du threadpool : moins couteux que la création et la destruction de thread
+                        // UTILISATION DU THREADPOOL : MOINS COUTEUX QUE LA CRÉATION ET LA DESTRUCTION DE THREADS
+
                         Task.WhenAll(tasks).GetAwaiter().GetResult();
                         
                         Queue.RemoveRange(0, maxTask);
@@ -156,8 +143,6 @@ namespace BotFactory.Factories
                         QueueTime = TimeSpan.FromSeconds(0);
                         i = 0;
                     }
-
-                    //stopwatch.Stop();
                 }
             };
         }
@@ -168,17 +153,6 @@ namespace BotFactory.Factories
 
             if (fqe != null)
             {
-                // http://stackoverflow.com/questions/981330/instantiate-an-object-with-a-runtime-determined-type
-                // http://stackoverflow.com/questions/2451336/how-to-pass-parameters-to-activator-createinstancet
-
-                /*var uf = (ITestingUnit) Activator.CreateInstance(fqe.Model, BindingFlags.CreateInstance |
-                                                                            BindingFlags.Public |
-                                                                            BindingFlags.Instance |
-
-                                                                            // http://stackoverflow.com/questions/2421994/invoking-methods-with-optional-parameters-through-reflection
-                                                                            BindingFlags.OptionalParamBinding,
-                                                                            null, new object[] { fqe.Model.Name + i, fqe.Model, fqe. Type.Missing }, CultureInfo.CurrentCulture);*/
-
                 unitToBeAdded = Activator.CreateInstance(fqe.Model) as WorkingUnit;
 
                 Storage.Add(unitToBeAdded);
@@ -198,12 +172,6 @@ namespace BotFactory.Factories
         public int QueueFreeSlots { get; set; }
 
         public TimeSpan QueueTime { get; set; }
-
-        private void OnTimedEvent(object sender, EventArgs e)
-        {
-            //if(stopwatch != null)
-               // QueueTime = stopwatch.Elapsed;
-        }
 
         /// <summary>
         ///  Indique l'emplacement libre pour l’entrepôt
@@ -247,18 +215,6 @@ namespace BotFactory.Factories
 
                 return true;
             }
-        }
-
-        // finalizer != c++ destructor
-        // Garbage collection is simulating a computer with an infinite amount of memory
-        // If you run the program on a machine with more RAM than the amount of memory required by program :
-        // the null garbage collector is a valid garbage collector, and the null garbage collector never runs finalizers since it never collects anything
-        // When you are finished with a resource, you need to release it by calling Close or Disconnect or whatever cleanup method is available on the object
-        // (The IDisposable interface codifies this convention)
-
-        ~UnitFactory()
-        {
-            // extra cleanup here before their memory is freed
         }
     }
 }
