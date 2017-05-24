@@ -21,7 +21,6 @@ namespace BotFactory.FactoriesTests
         Coordinates destPos = new Coordinates(1, 1);
         Coordinates parkingPos = new Coordinates(1, 1);
 
-
         ConcreteWorkingUnit cwu01;
         ConcreteWorkingUnit cwu02;
         ConcreteWorkingUnit cwu03;
@@ -79,6 +78,7 @@ namespace BotFactory.FactoriesTests
         [TestMethod]
         public void WorkingUnit_WorkBeginsAsync()
         {
+            // task.run is an another method to test async meth but the last is the best
             bool result = Task.Run(async () => await cwu02.WorkBeginsAsync()).GetAwaiter().GetResult();
 
             if (!cwu02.CurrentPos.Equals(cwu02.WorkingPos))
@@ -93,6 +93,56 @@ namespace BotFactory.FactoriesTests
             var t = Task.Run(async () => await cwu03.WorkEndsAsync()).GetAwaiter().GetResult();
 
             Assert.IsTrue(cwu03.CurrentPos.Equals(cwu03.ParkingPos));
+        }
+
+        [TestMethod]
+        public void ParallelMoveAsync()
+        {
+            Coordinates dest = new Coordinates(99, 99);
+
+            // https://www.richard-banks.org/2011/09/using-parallel-task-library-to-unit.html
+
+            //1. doesn't work
+            /*
+            Parallel.Invoke(
+                   async () => await cwu01.MoveAsync(currentPos, dest),
+                   async () => await cwu02.MoveAsync(currentPos, dest),
+                   async () => await cwu03.MoveAsync(currentPos, dest),
+                   async () => await cwu04.MoveAsync(currentPos, dest)
+               );
+            */
+            // https://stackoverflow.com/questions/12343081/run-two-async-tasks-in-parallel-and-collect-results-in-net-4-5
+
+            //2. doesn't work
+
+            /*var t1 = cwu01.MoveAsync(currentPos, dest);
+            var t2 = cwu02.MoveAsync(currentPos, dest);
+            var t3 = cwu03.MoveAsync(currentPos, dest);
+            var t4 = cwu04.MoveAsync(currentPos, dest);*/
+
+            //await Task.WhenAll(t1/*, t2, t3, t4*/)/*.GetAwaiter().GetResult()*/;
+
+            // https://stackoverflow.com/questions/35074063/how-to-unit-test-a-method-that-uses-task-whenall
+            //3. work !
+
+            /*
+            var t1 = Task.Run(async () => await Task.Delay(TimeSpan.FromSeconds(5)));
+            var t2 = Task.Run(async () => await Task.Delay(TimeSpan.FromSeconds(5)));
+            var t3 = Task.Run(async () => await Task.Delay(TimeSpan.FromSeconds(5)));
+            var t4 = Task.Run(async () => await Task.Delay(TimeSpan.FromSeconds(5)));
+            */
+
+            var t1 = Task.Run(async () => await cwu01.MoveAsync(currentPos, dest));
+            var t2 = Task.Run(async () => await cwu02.MoveAsync(currentPos, dest));
+            var t3 = Task.Run(async () => await cwu03.MoveAsync(currentPos, dest));
+            var t4 = Task.Run(async () => await cwu04.MoveAsync(currentPos, dest));
+
+            // The async/await includes a few operators to help with parallel composition, such as WhenAll and WhenAny.
+            Task.WhenAll(t1, t2, t3, t4).GetAwaiter().GetResult();
+
+            if (!cwu01.CurrentPos.Equals(dest) || !cwu02.CurrentPos.Equals(dest) || !cwu03.CurrentPos.Equals(dest) || !cwu04.CurrentPos.Equals(dest))
+                  Assert.Fail();
+
         }
     }
 }

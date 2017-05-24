@@ -95,6 +95,10 @@ namespace BotFactory.Factories
             {
                 int i = 0;
 
+                int numberOfCore = Environment.ProcessorCount;
+                int maxTask = 0;
+
+                // CONSTRUCTION
                 if (Queue.Count > 0 && StorageFreeSlots > 0)
                 {
                     if (!this._isBuilding)
@@ -104,21 +108,34 @@ namespace BotFactory.Factories
                         this._isBuilding = true;
 
                         IFactoryQueueElement fqe = Queue.FirstOrDefault();
-                        Queue.RemoveAt(0);
-
+                       
                         FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT EN CONSTRUCTION"));
 
-                        WorkingUnit unitToBeAdded = AddFactoryQueueElementToStorage(fqe);
+                        if (Queue.Count < numberOfCore)
+                            maxTask = Queue.Count;
+                        else if (Queue.Count >= numberOfCore)
+                            maxTask = numberOfCore;
 
-                        QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
+                        if (maxTask > StorageFreeSlots)
+                            maxTask = StorageFreeSlots;
 
-                        Thread.Sleep(TimeSpan.FromSeconds(unitToBeAdded.BuildTime));
+                        var tasks = new List<Task>();
 
-                        if (QueueFreeSlots < QueueCapacity)
-                            QueueFreeSlots++;
+                        for (int j = 0; j < maxTask; j++)
+                            tasks.Add(Task.Run(() =>
+                            {
+                                CreateAndStoreUnit(fqe);
+                            }));
 
-                        if (StorageFreeSlots > 0)
-                            StorageFreeSlots--;
+                        Task.WhenAll(tasks).GetAwaiter().GetResult();
+                        
+                        Queue.RemoveRange(0, maxTask);
+
+                        if (QueueFreeSlots < QueueCapacity + maxTask)
+                            QueueFreeSlots += maxTask;
+
+                        if (StorageFreeSlots >= maxTask)
+                            StorageFreeSlots -= maxTask;
                             
                         this._isBuilding = false;
 
@@ -144,7 +161,7 @@ namespace BotFactory.Factories
             };
         }
 
-        public WorkingUnit AddFactoryQueueElementToStorage(IFactoryQueueElement fqe)
+        public WorkingUnit CreateAndStoreUnit(IFactoryQueueElement fqe)
         {
             WorkingUnit unitToBeAdded = null;
 
@@ -166,6 +183,9 @@ namespace BotFactory.Factories
                 Storage.Add(unitToBeAdded);
 
                 Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'un robot dans l'entrepôt (nom : {fqe.Name})");
+                
+                QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
+                Thread.Sleep(TimeSpan.FromSeconds(unitToBeAdded.BuildTime));
             }
 
             return unitToBeAdded;
@@ -199,14 +219,12 @@ namespace BotFactory.Factories
         public int QueueCapacity { get; set; }
 
         public int StorageCapacity { get; set; }
-
-
+        
         public async Task BuildingQueueAsync()
         {
             await Task.Delay(TimeSpan.FromSeconds(/*uf.BuildTime*/5000));
         }
-
-
+        
         public bool CreateWorkableUnitToQueue()
         {
             // SI LA QUEUE EST PLEINE
