@@ -127,6 +127,7 @@ namespace BotFactory.Factories
                                 CreateAndStoreUnit(fqe);
                             }));
 
+                        // Utilisation du threadpool : moins couteux que la création et la destruction de thread
                         Task.WhenAll(tasks).GetAwaiter().GetResult();
                         
                         Queue.RemoveRange(0, maxTask);
