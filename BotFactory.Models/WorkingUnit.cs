@@ -8,12 +8,13 @@ namespace BotFactory.Models
 {
 	public abstract class WorkingUnit : BaseUnit, ITestingUnit
 	{
-        public WorkingUnit(string name = "Sans nom", string model = "Sans nom", double speed = 5.0, double buildTime = 5.0) : base(name, model, speed, buildTime)
-        {
-            ParkingPos = new Coordinates(0, 0);
-            WorkingPos = new Coordinates(0, 0);
-            IsWorking = false;
-        }
+        public Coordinates WorkingPos { get; set; }
+
+        Type IFactoryQueueElement.Model{get; set; }
+
+        public bool IsWorking { get; set; }
+
+        public Coordinates ParkingPos { get; set; }
 
         event EventHandler<EventArgs> ITestingUnit.UnitStatusChanged
         {
@@ -28,9 +29,12 @@ namespace BotFactory.Models
             }
         }
 
-        public bool IsWorking { get; set; }
-
-		public Coordinates ParkingPos { get; set; }
+        public WorkingUnit(string name = "SANS NOM", string model = "SANS NOM", double speed = 5.0, double buildTime = 5.0) : base(name, model, speed, buildTime)
+        {
+            ParkingPos = new Coordinates(0, 0);
+            WorkingPos = new Coordinates(0, 0);
+            IsWorking = false;
+        }
 
         /// <summary>
         /// see http://www.e-naxos.com/Blog/post/De-la-bonne-utilisation-de-AsyncAwait-en-C.aspx
@@ -44,7 +48,7 @@ namespace BotFactory.Models
             {
                 IsWorking = true;
 
-                OnStatusChanged(this, new StatusChangedEventArgs("Je commence à travailler"));
+                OnStatusChanged(this, new StatusChangedEventArgs("JE COMMENCE À TRAVAILLER"));
             }
 
             return result && IsWorking;
@@ -58,19 +62,10 @@ namespace BotFactory.Models
             {
                 IsWorking = false;
 
-                OnStatusChanged(this, new StatusChangedEventArgs("Je termine de travailler"));
+                OnStatusChanged(this, new StatusChangedEventArgs("JE TERMINE DE TRAVAILLER"));
             }
 
             return result && !IsWorking;
-        }
-
-		public Coordinates WorkingPos { get; set; }
-
-        Type IFactoryQueueElement.Model
-        {
-            get;
-
-            set;
         }
     }
 }

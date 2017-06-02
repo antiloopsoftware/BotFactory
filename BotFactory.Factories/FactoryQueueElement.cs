@@ -6,69 +6,23 @@ namespace BotFactory.Factories
 {
     public class FactoryQueueElement : IFactoryQueueElement
     {
-        private Type _model;
-        private string _name;
-        private Coordinates _parkingPos;
-        private Coordinates _workingPos;
+        public Type Model { get; set; }
 
-        public Type Model
-        {
-            get
-            {
-                return _model;
-            }
-            set
-            {
-                _model = value;
-            }
-        }
+        public string Name { get; set; }
 
-        public string Name
-        {
-            get
-            {
-                return _name;
+        public Coordinates ParkingPos { get; set; }
 
-            }
-            set
-            {
-                _name = value;
-            }
-        }
-
-        public Coordinates ParkingPos
-        {
-            get
-            {
-                return _parkingPos;
-            }
-            set
-            {
-                _parkingPos = value;
-            }
-        }
-
-        public Coordinates WorkingPos
-        {
-            get
-            {
-                return _workingPos;
-            }
-            set
-            {
-                _workingPos = value;
-            }
-        }
+        public Coordinates WorkingPos { get; set; }
 
         public FactoryQueueElement(Type model, string name, Coordinates parkingPos, Coordinates workingPos)
         {
-            _model = model;
+            Model = model;
 
-            _name = name;
+            Name = name;
 
-            _parkingPos = parkingPos;
+            ParkingPos = parkingPos;
 
-            _workingPos = workingPos;
+            WorkingPos = workingPos;
         }
     }
 }

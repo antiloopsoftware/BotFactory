@@ -1,20 +1,10 @@
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BotFactory.Common.Interface
 {
 	public interface IBuidableUnit
 	{
-		double BuildTime
-		{
-			get;
-			set;
-		}
+		double BuildTime { get; set; }
 
-		string Model
-		{
-			get;
-		}
+		string Model { get; set; }
 	}
 }

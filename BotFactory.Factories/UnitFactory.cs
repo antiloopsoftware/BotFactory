@@ -5,166 +5,17 @@ using System;
 using System.Collections.Generic;
 using System.Threading;
 using System.Linq;
-using System.Threading.Tasks;
 
 namespace BotFactory.Factories
 {
     public class UnitFactory : ReportingUnit, IUnitFactory
     {
         private bool _isWaiting = false;
-        private bool _isBuilding = false;
+        private Thread _thread;
+        private static AutoResetEvent _autoResetEvent = new AutoResetEvent(false);
+        static readonly object _object = new object();
 
-        private Thread thread;
-        private static AutoResetEvent autoResetEvent = new AutoResetEvent(false);
         public event FactoryProgress FactoryProgress;
-
-        public UnitFactory(int queueCapacity, int storageCapacity)
-        {
-            QueueCapacity = QueueFreeSlots = queueCapacity;
-            StorageCapacity = StorageFreeSlots = storageCapacity;
-
-            Queue = new List<IFactoryQueueElement>();
-            Storage = new List<ITestingUnit>();
-
-            //ON INITIALISE L'OBJECT THREAD EN LUI PASSANT LA MÉTHODE
-            //À EXÉCUTER DANS LE NOUVEAU THREAD
-            thread = new Thread(BuildingQueue);
-
-            //COMMENCER L'EXÉCUTION DU THREAD
-            thread.Start();
-
-            // ou
-
-            // THIS CREATE A SEPARATED THREAD FOR THE TASK
-            //Task.Run(() => BuildingQueueAsync());
-        }
-
-        public bool AddWorkableUnitToQueue(Type model, string name, Coordinates parkingPos, Coordinates workingPos)
-        {
-            // SI LA QUEUE EST PLEINE
-            if (Queue.Count > QueueCapacity || QueueFreeSlots == 0)
-            {
-                return false;
-            }
-            else
-            {
-                WorkingUnit unitToBeAdded = AddFactoryQueueElement(model, name, parkingPos, workingPos);
-                QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
-
-                if (QueueFreeSlots > 0)
-                    QueueFreeSlots--;
-
-                if (this._isWaiting)
-                   autoResetEvent.Set();
-
-                FactoryProgress(Queue.First(), new StatusChangedEventArgs("NOUVEAU ROBOT AJOUTÉ DANS LA FILE D'ATTENTE"));
-
-                return true;
-            }
-        }
-
-        public WorkingUnit AddFactoryQueueElement(Type model, string name, Coordinates parkingPos, Coordinates workingPos)
-        {
-            IFactoryQueueElement factoryQueueElement = new FactoryQueueElement(model, name, parkingPos, workingPos);
-
-            // PLACER LA COMMANDE DANS LA QUEUE
-            Console.WriteLine(
-                $"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {model}; nom : {name} ; lieu de rechargement : {parkingPos.X}, {parkingPos.Y}; lieu de travail : {workingPos.X}, {workingPos.X})"
-                + Environment.NewLine);
-
-            Queue.Add(factoryQueueElement);
-
-            return Activator.CreateInstance(Queue.First().Model) as WorkingUnit;
-        }
-
-        public void BuildingQueue()
-        {
-            while (Thread.CurrentThread.IsAlive)
-            {
-                int i = 0;
-
-                int numberOfCore = Environment.ProcessorCount;
-                int maxTask = 0;
-
-                // CONSTRUCTION
-                if (Queue.Count > 0 && StorageFreeSlots > 0)
-                {
-                    if (!this._isBuilding)
-                    {
-                        this._isBuilding = true;
-
-                        IFactoryQueueElement fqe = Queue.FirstOrDefault();
-                       
-                        FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT EN CONSTRUCTION"));
-
-                        if (Queue.Count < numberOfCore)
-                            maxTask = Queue.Count;
-                        else if (Queue.Count >= numberOfCore)
-                            maxTask = numberOfCore;
-
-                        if (maxTask > StorageFreeSlots)
-                            maxTask = StorageFreeSlots;
-
-                        var tasks = new List<Task>();
-
-                        for (int j = 0; j < maxTask; j++)
-                            tasks.Add(Task.Run(() =>
-                            {
-                                CreateAndStoreUnit(fqe);
-                            }));
-
-                        // UTILISATION DU THREADPOOL : MOINS COUTEUX QUE LA CRÉATION ET LA DESTRUCTION DE THREADS
-
-                        Task.WhenAll(tasks).GetAwaiter().GetResult();
-                        
-                        Queue.RemoveRange(0, maxTask);
-
-                        if (QueueFreeSlots < QueueCapacity + maxTask)
-                            QueueFreeSlots += maxTask;
-
-                        if (StorageFreeSlots >= maxTask)
-                            StorageFreeSlots -= maxTask;
-                            
-                        this._isBuilding = false;
-
-                        FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT CONSTRUIT ET PRÊT A ÊTRE TESTÉ"));
-                    }
-
-                    i++;
-                }
-                else
-                {
-                    this._isWaiting = true;
-                    Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Thread de construction en attente");
-                    autoResetEvent.WaitOne();
-
-                    if (Queue.Count == 0)
-                    {
-                        QueueTime = TimeSpan.FromSeconds(0);
-                        i = 0;
-                    }
-                }
-            };
-        }
-
-        public WorkingUnit CreateAndStoreUnit(IFactoryQueueElement fqe)
-        {
-            WorkingUnit unitToBeAdded = null;
-
-            if (fqe != null)
-            {
-                unitToBeAdded = Activator.CreateInstance(fqe.Model) as WorkingUnit;
-
-                Storage.Add(unitToBeAdded);
-
-                Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'un robot dans l'entrepôt (nom : {fqe.Name})");
-                
-                QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
-                Thread.Sleep(TimeSpan.FromSeconds(unitToBeAdded.BuildTime));
-            }
-
-            return unitToBeAdded;
-        }
 
         /// <summary>
         /// Indique l'emplacement libre pour la queue
@@ -188,34 +39,99 @@ namespace BotFactory.Factories
         public int QueueCapacity { get; set; }
 
         public int StorageCapacity { get; set; }
-        
-        public async Task BuildingQueueAsync()
+
+        public UnitFactory(int queueCapacity, int storageCapacity)
         {
-            await Task.Delay(TimeSpan.FromSeconds(/*uf.BuildTime*/5000));
+            QueueCapacity = QueueFreeSlots = queueCapacity;
+            StorageCapacity = StorageFreeSlots = storageCapacity;
+
+            Queue = new List<IFactoryQueueElement>();
+            Storage = new List<ITestingUnit>();
+
+            //ON INITIALISE L'OBJECT THREAD EN LUI PASSANT LA MÉTHODE
+            //À EXÉCUTER DANS LE NOUVEAU THREAD
+            _thread = new Thread(BuildingQueue);
+
+            //COMMENCER L'EXÉCUTION DU THREAD
+            _thread.Start();
         }
-        
-        public bool CreateWorkableUnitToQueue()
+
+        public bool AddWorkableUnitToQueue(Type model, string name, Coordinates parkingPos, Coordinates workingPos)
         {
-            // SI LA QUEUE EST PLEINE
-            if (Queue.Count > QueueCapacity)
-            {
+            if (Queue.Count > QueueCapacity || QueueFreeSlots == 0)
                 return false;
-            }
-            else
+
+            Queue.Add(new FactoryQueueElement(model, name, parkingPos, workingPos));
+
+            if (QueueFreeSlots > 0)
+                QueueFreeSlots--;
+
+            lock (_object)
             {
-                for (int i = 0; i < 10; i++)
-                {
-                    IFactoryQueueElement factoryQueueElement = (IFactoryQueueElement)new FactoryQueueElement(typeof(HAL), "name" + i, new Coordinates(1 + i, 2 + i), new Coordinates(3 + i, 4 + i));
-
-                    // PLACER LA COMMANDE DANS LA QUEUE
-                    Console.WriteLine($"{DateTime.Now:yyyy-MM-dd HH:mm:ss} : Ajout d'une commande de robot dans la queue (model : {typeof(HAL)}; nom : {"name" + i} ;" + Environment.NewLine);
-
-                    Queue.Add(factoryQueueElement);
-                }
-
-                return true;
+                if (this._isWaiting)
+                    _autoResetEvent.Set();
             }
+
+            FactoryProgress(Queue.First(), new StatusChangedEventArgs("NOUVEAU ROBOT AJOUTÉ DANS LA FILE D'ATTENTE"));
+
+            return true;   
         }
+
+        public void BuildingQueue()
+        {
+            while (Thread.CurrentThread.IsAlive)
+            {
+                // CONSTRUCTION
+
+                if (Queue.Count > 0 && StorageFreeSlots > 0)
+                {
+                    IFactoryQueueElement fqe = Queue.FirstOrDefault();
+                       
+                    FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT EN CONSTRUCTION"));
+                    CreateAndStoreUnit(fqe);
+                    Queue.Remove(fqe);
+
+                    if (QueueFreeSlots < QueueCapacity)
+                        QueueFreeSlots += 1;
+
+                    if (StorageFreeSlots >= 1)
+                        StorageFreeSlots -= 1;
+
+                    FactoryProgress(fqe, new StatusChangedEventArgs("NOUVEAU ROBOT CONSTRUIT ET PRÊT A ÊTRE TESTÉ"));
+                }
+                else
+                {
+                    // THREAD DE CONSTRUCTION EN ATTENTE
+
+                    lock (_object)
+                       this._isWaiting = true;
+
+                    _autoResetEvent.WaitOne();
+                }
+            };
+        }
+
+        public WorkingUnit CreateAndStoreUnit(IFactoryQueueElement fqe)
+        {
+            WorkingUnit unitToBeAdded = null;
+
+            if (fqe == null)
+                return null;
+
+            unitToBeAdded = Activator.CreateInstance(fqe.Model) as WorkingUnit;
+
+            // SIMULATION DU TEMPS DE CONSTRUCTION 
+
+            Thread.Sleep(TimeSpan.FromSeconds(unitToBeAdded.BuildTime));
+            
+            // AJOUT D'UN ROBOT DANS L'ENTREPÔT
+
+            Storage.Add(unitToBeAdded);
+                
+            QueueTime += TimeSpan.FromSeconds(unitToBeAdded.BuildTime);
+
+            return unitToBeAdded;
+        }           
     }
 }
 

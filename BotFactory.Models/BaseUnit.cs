@@ -7,7 +7,11 @@ namespace BotFactory.Models
 {
 	public abstract class BaseUnit : ReportingUnit, IBaseUnit
 	{
-        public BaseUnit(string name = "Nameless", string model = "Nameless", double buildTime = 5.0, double speed = 5.0) : base(model, buildTime)
+        public string Name { get; set; }
+
+        public double Speed { get; set; }
+
+        public BaseUnit(string name = "SANS NOM", string model = "SANS NOM", double buildTime = 5.0, double speed = 5.0) : base(model, buildTime)
         {
             Name = name;
             Speed = speed;
@@ -20,7 +24,7 @@ namespace BotFactory.Models
 		{
            CurrentPos = currentPos;
 
-           OnStatusChanged(this, new StatusChangedEventArgs("Je me déplace")); 
+           OnStatusChanged(this, new StatusChangedEventArgs("JE ME DÉPLACE")); 
 
            Vector v = Vector.FromCoordinates(currentPos, destPos);
            double lenght = v.Length();
@@ -29,12 +33,7 @@ namespace BotFactory.Models
            CurrentPos.X = destPos.X; 
            CurrentPos.Y= destPos.Y;
 
-
-            return true;
+           return true;
 		}
-
-		public string Name { get; set; }
-		
-        public double Speed { get; set; }
     }
 }

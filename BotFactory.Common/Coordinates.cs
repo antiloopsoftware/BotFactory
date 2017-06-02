@@ -4,15 +4,15 @@ namespace BotFactory.Common.Tools
 {
     public class Coordinates : Object
     {
+        public double Y { get; set; }
+
+        public double X { get; set; }
+
         public Coordinates(double x, double y)
         {
             X = x;
             Y = y;
         }
-
-        public double Y { get; set; }
-
-        public double X { get; set; }
 
         public override bool Equals(Object obj)
         {

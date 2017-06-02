@@ -1,6 +1,5 @@
 using BotFactory.Common.Interface;
 using BotFactory.Common.Tools;
-using System;
 
 namespace BotFactory.Models
 {
@@ -29,7 +28,7 @@ namespace BotFactory.Models
             UnitStatusChanged(sender, statusChangedEventArgs);
         }
 
-        public ReportingUnit(string model = "Sans nom", double built_time = 5) : base(model, built_time)
+        public ReportingUnit(string model = "SANS NOM", double built_time = 5) : base(model, built_time)
         {
             Model = model;
             BuildTime = built_time;

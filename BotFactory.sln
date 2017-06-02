@@ -9,8 +9,6 @@ Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotFactory.Factories", "Bot
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotFactory.FactoriesTests", "BotFactory.FactoriesTests\BotFactory.FactoriesTests.csproj", "{96682334-5D6D-4F1F-808E-F8B8AD925B50}"
 EndProject
-Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotFactory.Launcher", "BotFactory.Launcher\BotFactory.Launcher.csproj", "{075004C9-4C5F-4D63-AF2C-32563F450C10}"
-EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotFactory.Models", "BotFactory.Models\BotFactory.Models.csproj", "{EBBE5846-17B4-4A69-A89D-7879EB308351}"
 EndProject
 Project("{FAE04EC0-301F-11D3-BF4B-00C04F79EFBC}") = "BotFactory", "botfactory-master\BotFactory.csproj", "{90845D20-0A0B-4D85-B38C-4DF4A8FA2FAD}"
@@ -33,10 +31,6 @@ Global
 		{96682334-5D6D-4F1F-808E-F8B8AD925B50}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{96682334-5D6D-4F1F-808E-F8B8AD925B50}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{96682334-5D6D-4F1F-808E-F8B8AD925B50}.Release|Any CPU.Build.0 = Release|Any CPU
-		{075004C9-4C5F-4D63-AF2C-32563F450C10}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
-		{075004C9-4C5F-4D63-AF2C-32563F450C10}.Debug|Any CPU.Build.0 = Debug|Any CPU
-		{075004C9-4C5F-4D63-AF2C-32563F450C10}.Release|Any CPU.ActiveCfg = Release|Any CPU
-		{075004C9-4C5F-4D63-AF2C-32563F450C10}.Release|Any CPU.Build.0 = Release|Any CPU
 		{EBBE5846-17B4-4A69-A89D-7879EB308351}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
 		{EBBE5846-17B4-4A69-A89D-7879EB308351}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{EBBE5846-17B4-4A69-A89D-7879EB308351}.Release|Any CPU.ActiveCfg = Release|Any CPU

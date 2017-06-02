@@ -1,8 +1,4 @@
-using BotFactory.Common.Interface;
 using BotFactory.Common.Tools;
-using System;
-using System.Collections.Generic;
-using System.Text;
 
 namespace BotFactory.Models
 {
