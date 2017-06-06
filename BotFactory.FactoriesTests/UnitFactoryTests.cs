@@ -113,6 +113,7 @@ namespace BotFactory.FactoriesTests
 
             if (!cwu01.CurrentPos.Equals(dest) || !cwu02.CurrentPos.Equals(dest) || !cwu03.CurrentPos.Equals(dest) || !cwu04.CurrentPos.Equals(dest))
                   Assert.Fail();
+
         }
     }
 }
